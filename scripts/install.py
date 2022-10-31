@@ -30,13 +30,13 @@ def init():
             f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[1]}.py")
         if request_script.status_code != 404:
             if os.path.exists(f"/{scripts_path}/{sys.argv[1]}.py"):
-                screen.print("Error: This script already exists!", style="red")
+                screen.print(f"Error: '{sys.argv[1]}' script already exists!", style="red")
             else:
                 with open(f"/{scripts_path}/{sys.argv[1]}.py", "w") as script_file:
                     script_file.write(request_script.text)
                 screen.print(f"The '{sys.argv[1]}' script was successfully installed!", style="green")
         else:
-            screen.print("Error: Script not found!", style="red")
+            screen.print(f"Error: '{sys.argv[1]}' script not found!", style="red")
 
 
 if __name__ == "__main__":

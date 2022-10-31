@@ -25,9 +25,9 @@ def init():
             ask_to_uninstall = input("Are you sure? (y/n): ").lower()
             if ask_to_uninstall == "y":
                 os.remove(f"/{scripts_path}/{sys.argv[1]}.py")
-                screen.print(f"{sys.argv[1]} script was successfully uninstalled!", style="green")
+                screen.print(f"'{sys.argv[1]}' script was successfully uninstalled!", style="green")
         else:
-            screen.print("Error: Script not found!", style="red")
+            screen.print(f"Error: '{sys.argv[1]}' script not found!", style="red")
 
 
 if __name__ == "__main__":
