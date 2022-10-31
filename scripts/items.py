@@ -21,17 +21,15 @@ def show_items(items: list):
     for item in items:
         max_length = len(item) if len(item) > max_length else max_length
 
-    end_point = len(items) if max_length % 2 == 0 else len(items) - 1
-
     index = 0
-    while index < end_point:
+    while index < len(items):
         space = " " * (max_length - len(items[index]))
         screen.print(items[index], end=f"{space} \t")
-        screen.print(items[index + 1])
+        if index + 1 < len(items):
+            screen.print(items[index + 1])
         index += 2
 
-    if len(items) % 2 != 0:
-        screen.print(items[-1])
+    if len(items) % 2 != 0: print()
 
 
 def init():
@@ -42,11 +40,11 @@ def init():
             if item.startswith("."):
                 items.remove(item)
 
-        show_items(items)
+        show_items(sorted(items))
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-a":
         items = os.listdir(os.getcwd())
-        show_items(items)
+        show_items(sorted(items))
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print(guide_message, style="green")
