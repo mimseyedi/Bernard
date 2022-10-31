@@ -27,7 +27,7 @@ def init():
 
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
         request_script = requests.get(
-            f"https://raw.githubusercontent.com/mimseyedi/bernard/master/scripts/{sys.argv[1]}.py")
+            f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[1]}.py")
         if request_script.status_code != 404:
             if os.path.exists(f"/{scripts_path}/{sys.argv[1]}.py"):
                 screen.print("Error: This script already exists!", style="red")
