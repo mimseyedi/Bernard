@@ -57,7 +57,10 @@ def init():
                 parameters = ' '.join(cmd_input[1:])
 
                 if os.path.exists(f'{scripts_path}/{main_command}'):
-                    subprocess.run([sys.executable, f"{scripts_path}/{main_command}", parameters])
+                    if len(parameters) > 0:
+                        subprocess.run([sys.executable, f"{scripts_path}/{main_command}", parameters])
+                    else:
+                        subprocess.run([sys.executable, f"{scripts_path}/{main_command}"])
                 else:
                     screen.print(f"Error: '{main_command[:-3]}' command not found!", style="red")
 
