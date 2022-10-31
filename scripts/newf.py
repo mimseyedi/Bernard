@@ -22,7 +22,7 @@ def init():
             screen.print("Error: There is a file with this name!", style="red")
         else:
             with open(f"{os.getcwd()}/{sys.argv[1]}", "w") as _: pass
-            screen.print(f'{sys.argv[1]} file successfully created.', style='green')
+            screen.print(f"'{sys.argv[1]}' file successfully created.", style='green')
 
     else:
         screen.print("Error: Unknown parameters!", style="red")
