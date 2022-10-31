@@ -12,9 +12,8 @@ finally:
 guide_message = """With the items command, you can see all items in directories.
 
 Parameters:
--c show clean items
--n count all items
--nc count clean items"""
+-a show all items include hidden files
+"""
 
 
 def show_items(items: list):
