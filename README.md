@@ -18,7 +18,7 @@ In this way, it will be easier to develop Bernard by writing small and separate 
     * [Rule 2: Guides are required](#rule2)
     * [Rule 3: Do not disturb the settings](#rule3)
     * [Rule 4: All scripts must be inplace](#rule4)
-    * [Rule 5: Don't forget the essentials!](#rule5)
+    * [Rule 5: Don't forget the dependencies!](#rule5)
 
 
 ## What is Bernard? <a class="anchor" id="bernard_what"></a>
@@ -142,9 +142,7 @@ output:
 With the items command, you can see all items in directories.
 
 Parameters:
--c show clean items
--n count all items
--nc count clean items
+-a show all items include hidden files
 ```
 
 
@@ -166,7 +164,7 @@ All scripts must be inplace! In the sense that their final processing should be 
 So be careful! Forget the **return**!
 
 
-### Rule 5: Don't forget the essentials! <a class="anchor" id="rule5"></a>
+### Rule 5: Don't forget the dependencies! <a class="anchor" id="rule5"></a>
 If you want to use a non-standard library or module for the script you are writing, be sure to install it according to the desired protocols at the beginning of the script so as not to encounter an error.
 However, it is better to use standard and reliable modules as much as you can.
 ```python
@@ -175,11 +173,9 @@ import subprocess
 
 try:
     import rich
-    import prompt_toolkit
-    
-except ImportError as error:
+except ImportError as module:
     python = sys.executable
-    subprocess.check_call([python, '-m', 'pip', 'install', error.name], stdout=subprocess.DEVNULL)
+    subprocess.check_call([python, '-m', 'pip', 'install', module.name], stdout=subprocess.DEVNULL)
 ```
 
 or
