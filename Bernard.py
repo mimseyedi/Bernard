@@ -61,6 +61,38 @@ def init():
                 else:
                     screen.print(f"Error: '{main_command[:-3]}' command not found!", style="red")
 
+            elif cmd_input[0] == "home":
+                if len(cmd_input) == 1:
+                    os.chdir(home_path)
+                elif len(cmd_input) == 2 and cmd_input[1] == "-h":
+                    screen.print("With the home command, you can goto home location.", style="green")
+                else:
+                    sceen.print("Error: Unknown parameters!", style="red")
+
+            elif cmd_input[0] == "goto":
+                if len(cmd_input) == 1:
+                    screen.print("Error: You must choose a path!", style="red")
+                elif len(cmd_input) == 2 and cmd_input[1] == "-h":
+                    screen.print("With the goto command, you can change path location and move between directories.",
+                                  style="green")
+                elif len(cmd_input) == 2 and cmd_input[1] != "-h":
+                    if os.path.exists(f'{os.getcwd()}/{cmd_input[1]}'):
+                        if os.path.isdir(f'{os.getcwd()}/{cmd_input[1]}'):
+                            os.chdir(f'{os.getcwd()}/{cmd_input[1]}')
+                        else:
+                            screen.print("Error: you must select a directory!", style="red")
+                    else:
+                        screen.print("Error: path not found!", style="red")
+
+            elif cmd_input[0] == "back":
+                if len(cmd_input) == 1:
+                    os.chdir("..")
+                elif len(cmd_input) == 2 and cmd_input[1] == "-h":
+                    screen.print("With the back command, you can change path location and back to last path.",
+                                  style="green")
+                else:
+                    screen.print("Error: Unknown parameters!", style="red")
+
             elif cmd_input[0] == 'exit': break
 
 
