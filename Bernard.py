@@ -47,6 +47,8 @@ def init():
             if item.startswith("."):
                 items.remove(item)
 
+        items = map(lambda item: r'\ '.join(item.split(" ")), items)
+
         autocompleter = WordCompleter(sorted(items), ignore_case=False)
 
         cmd_input = season.prompt(f'➜ {current_dir[0][-1]}: ', completer=autocompleter).lstrip().split()
