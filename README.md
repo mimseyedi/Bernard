@@ -51,19 +51,19 @@ and make any changes you like to customize your terminal and share it with other
 ## How to use Bernard? <a class="anchor" id="bernard_use"></a>
 To install Bernard, it is enough to download the bernard_installation.py file:
 ```
-$ curl -o bernard_installation.py https://raw.githubusercontent.com/mimseyedi/bernard/master/bernard_installation.py
+$ curl -o Bernard_installation.py https://raw.githubusercontent.com/mimseyedi/bernard/master/Bernard_installation.py
 ```
 
 Then you need to run the installer file through the Python3 interpreter:
 ```
-python bernard_installation.py
+python Bernard_installation.py
 ```
 
 Make the desired settings and wait for the required scripts and libraries to be downloaded and installed.
 
 After the installation is complete, go to the Bernard directory and run the following command:
 ```
-python bernard.py
+python Bernard.py
 ```
 
 Bernard is now running on your terminal!
@@ -96,7 +96,7 @@ $ chmod +x bernard.py
 **The second step:**
 
 Add an interpreter “shebang” in top of file
-```python
+```
 #!/usr/bin/env python
 ```
 
@@ -119,7 +119,7 @@ So please don't change the script directory name or path!
 ```
 .
 └── Bernard/
-    ├── bernard.py
+    ├── Bernard.py
     ├── logs.db
     ├── settings.json
     └── scripts/
@@ -178,7 +178,7 @@ except ImportError as module:
     subprocess.check_call([python, '-m', 'pip', 'install', module.name], stdout=subprocess.DEVNULL)
 ```
 
-or
+another way:
 
 ```python
 import sys
