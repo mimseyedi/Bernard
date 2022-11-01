@@ -20,10 +20,16 @@ import json
 import sqlite3
 import subprocess
 from datetime import datetime
-from rich.console import Console
-from prompt_toolkit import PromptSession
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.completion import WordCompleter
+try:
+    from rich.console import Console
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
+try:
+    from prompt_toolkit import PromptSession
+    from prompt_toolkit.history import InMemoryHistory
+    from prompt_toolkit.completion import WordCompleter
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "prompt_toolkit"], stdout=subprocess.DEVNULL)
 
 
 def init():
