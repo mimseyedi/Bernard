@@ -35,7 +35,7 @@ I did this with Python because it was easier and more workable for me, and of co
 
 **This is the first draft of Bernard and the initial scripts:**
 
-<img src="Bernard_Design.png"/> <a class="anchor" id="bernard_draft"></a>
+<img src="Bernard_design.png"/> <a class="anchor" id="bernard_draft"></a>
 
 After I went through the process of implementing the basic design, I decided to write a installer for Bernard.
 Now you can start here after reading or rejecting this boring story:
