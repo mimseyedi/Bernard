@@ -21,8 +21,7 @@ def init():
                 digit_type = False
 
         if digit_type:
-            inputs_list = sorted(map(int, sys.argv[1:]))
-            inputs_list = map(str, inputs_list)
+            inputs_list = map(str, sorted(map(int, sys.argv[1:])))
             screen.print(', '.join(inputs_list))
         else:
             screen.print(', '.join(sorted(sys.argv[1:])))
