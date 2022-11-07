@@ -20,11 +20,19 @@ https://github.com/mimseyedi/Bernard
 
 
 import os
+import sys
 import json
 import hashlib
-import requests
 import subprocess
 from getpass import getpass
+try:
+    import requests
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
+try:
+    from clint.textui import progress
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
 try:
     from rich.console import Console
 except ImportError as module:
@@ -49,7 +57,7 @@ def installation_operation():
                 os.mkdir("scripts")
 
                 sha_256 = hashlib.sha256()
-                sha_256.update(str(password).encode('UTF-8'))
+                sha_256.update(str(user_password).encode('UTF-8'))
                 hashed_password = sha_256.hexdigest()
 
                 settings = {"path_settings": {"scripts_path": f"{os.getcwd()}/scripts",
@@ -62,7 +70,7 @@ def installation_operation():
                 screen.print("(### The settings file was successfully installed!)", style="green")
 
                 request_to_repo = requests.get(
-                    "https://raw.githubusercontent.com/mimseyedi/Bernard/master/bernard.py")
+                    "https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard.py")
                 with open("Bernard.py", "w") as bernard_file:
                     bernard_file.write(request_to_repo.text)
                 screen.print("(### The root file was successfully installed!)", style="green")
@@ -74,16 +82,22 @@ def installation_operation():
 
                 for script in scripts:
                     request_scripts = requests.get(
-                        f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{script}")
-                    with open(f"scripts/{script}", "w") as script_file:
-                        script_file.write(request_scripts.text)
+                        f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{script}", stream=True)
+                    with open(f"scripts/{script}", "wb") as script_file:
+                        total_length = int(request_scripts.headers.get('content-length'))
+                        for chunk in progress.bar(request_scripts.iter_content(chunk_size=1024),
+                                                  expected_size=(total_length / 1024) + 1):
+                            if chunk:
+                                script_file.write(chunk)
+                                script_file.flush()
+
                     screen.print(f"(### The {script} file was successfully installed!)", style="green")
 
-                    dep_packages = ["prompt_toolkit", "rich"]
-                    for package in dep_packages:
-                        subprocess.run([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
+                dep_packages = ["prompt_toolkit", "rich"]
+                for package in dep_packages:
+                    subprocess.run([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
 
-                    screen.print("### Bernard was successfully installed!", style="bold green")
+                screen.print("### Bernard was successfully installed!", style="bold green")
             else:
                 screen.print("Error: Passwords are not the same!", style="red")
         else:
