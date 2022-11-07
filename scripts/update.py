@@ -5,7 +5,10 @@ try:
     import requests
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
-
+try:
+    from clint.textui import progress
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
 try:
     from rich.console import Console
 except ImportError as module:
@@ -36,9 +39,18 @@ def init():
                     screen.print(f"Error: No updates found for '{sys.argv[1]}' script!", style="red")
                 else:
                     os.remove(f"/{scripts_path}/{sys.argv[1]}.py")
-                    with open(f"/{scripts_path}/{sys.argv[1]}.py", "w") as updated_script:
-                        updated_script.write(request_script.text)
-                        screen.print(f"'{sys.argv[1]}' script was successfully updated!", style="green")
+                    downloading_script = requests.get(
+                        f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[1]}.py",
+                        stream=True)
+                    with open(f"/{scripts_path}/{sys.argv[1]}.py", "wb") as script_file:
+                        total_length = int(downloading_script.headers.get('content-length'))
+                        for chunk in progress.bar(downloading_script.iter_content(chunk_size=1024),
+                                                  expected_size=(total_length / 1024) + 1):
+                            if chunk:
+                                script_file.write(chunk)
+                                script_file.flush()
+
+                    screen.print(f"'{sys.argv[1]}' script was successfully updated!", style="green")
             else:
                 screen.print(f"Error: '{sys.argv[1]}' script not found!", style="red")
         else:

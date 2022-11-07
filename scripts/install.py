@@ -5,13 +5,17 @@ try:
     import requests
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
-
+try:
+    from clint.textui import progress
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
 try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
     screen = Console()
+
 
 
 def init():
@@ -32,8 +36,16 @@ def init():
             if os.path.exists(f"/{scripts_path}/{sys.argv[1]}.py"):
                 screen.print(f"Error: '{sys.argv[1]}' script already exists!", style="red")
             else:
-                with open(f"/{scripts_path}/{sys.argv[1]}.py", "w") as script_file:
-                    script_file.write(request_script.text)
+                downloading_script = requests.get(
+                    f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[1]}.py", stream=True)
+                with open(f"/{scripts_path}/{sys.argv[1]}.py", "wb") as script_file:
+                    total_length = int(downloading_script.headers.get('content-length'))
+                    for chunk in progress.bar(downloading_script.iter_content(chunk_size=1024),
+                                              expected_size=(total_length / 1024) + 1):
+                        if chunk:
+                            script_file.write(chunk)
+                            script_file.flush()
+
                 screen.print(f"The '{sys.argv[1]}' script was successfully installed!", style="green")
         else:
             screen.print(f"Error: '{sys.argv[1]}' script not found!", style="red")
