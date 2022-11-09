@@ -84,6 +84,7 @@ def init():
     elif len(sys.argv) == 2 and sys.argv[1] == "-u":
         scripts = sorted(os.listdir(f"/{scripts_path}"))
         available_updates = list()
+
         for script in scripts:
             if script.endswith(".py"):
                 request = requests.get(
@@ -96,7 +97,12 @@ def init():
                         available_updates.append(script)
 
         if len(available_updates) > 0:
+            max_length = 0
+            for item in available_updates:
+                max_length = len(item) if len(item) > max_length else max_length
+
             screen.print(f"{len(available_updates)} Available updates: ", style="bold yellow")
+
             index = 0
             while index < len(available_updates):
                 space = " " * (max_length - len(available_updates[index]))
@@ -105,7 +111,6 @@ def init():
                     screen.print(available_updates[index + 1][:-3], style="green")
                 index += 2
             if len(available_updates) % 2 != 0: print()
-
         else:
             screen.print(f"Error: No updates found for scripts!", style="red")
 
