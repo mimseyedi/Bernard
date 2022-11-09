@@ -9,6 +9,10 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
 try:
+    from bs4 import BeautifulSoup
+except ImportError as package:
+    subprocess.run([sys.executable, "-m", "pip", "install", "beautifulsoup4"], stdout=subprocess.DEVNULL)
+try:
     from clint.textui import progress
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
@@ -35,7 +39,8 @@ scripts -> show all scripts installed
 install -> scripts install <script_name>
 uninstall -> scripts uninstall <script_name>
 update -> scripts update <script_name>
--u -> show available updates"""
+-u -> show available updates
+-n -> show new scripts"""
 
 
 def authentication(password):
@@ -80,6 +85,33 @@ def init():
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print(guide_message, style="green")
+
+    elif len(sys.argv) == 2 and sys.argv[1] == "-n":
+        installed_scripts = sorted(os.listdir(f"/{scripts_path}"))
+        request = requests.get("https://github.com/mimseyedi/Bernard/tree/master/scripts")
+        soup = BeautifulSoup(request.text, "lxml")
+
+        items = soup.findAll("div", class_="flex-auto min-width-0 col-md-2 mr-3")
+        repo_scripts = [item.text.strip() for item in items if item.text.strip().endswith(".py")]
+        new_scripts = [repo_script for repo_script in repo_scripts if repo_script not in installed_scripts]
+
+        if len(new_scripts) > 0:
+            max_length = 0
+            for item in new_scripts:
+                max_length = len(item) if len(item) > max_length else max_length
+
+            screen.print(f"{len(new_scripts)} New scripts are not installed: ", style="bold yellow")
+
+            index = 0
+            while index < len(new_scripts):
+                space = " " * (max_length - len(new_scripts[index]))
+                screen.print(new_scripts[index][:-3], end=f"{space} \t\t\t", style="green")
+                if index + 1 < len(new_scripts):
+                    screen.print(new_scripts[index + 1][:-3], style="green")
+                index += 2
+            if len(new_scripts) % 2 != 0: print()
+        else:
+            screen.print(f"Error: No new script found that is not installed!", style="red")
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-u":
         scripts = sorted(os.listdir(f"/{scripts_path}"))
