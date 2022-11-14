@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import shutil
+from pathlib import Path
 try:
     from rich.console import Console
 except ImportError as module:
@@ -25,40 +26,40 @@ drop paste the selected all files
 
 def add_last_drop(actions):
     hand["last_drop"].append(actions)
-    with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+    with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
         json.dump(hand, hand_file)
 
 
 def rem_last_drop():
-    with open(f"/{scripts_path}/.hand_memory.json", "r") as hand_file:
+    with open(Path(scripts_path, ".hand_memory.json"), "r") as hand_file:
         hand = json.load(hand_file)
 
     hand["last_drop"].clear()
-    with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+    with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
         json.dump(hand, hand_file)
 
 
 def init():
     global hand, scripts_path
     hand = {"items": [], "last_drop": []}
-    path_of_file = os.path.abspath(__file__).split("/")
-    scripts_path = '/'.join(path_of_file[1:-1])
+    path_of_file = Path(__file__)
+    scripts_path = path_of_file.parent
 
-    if not os.path.exists(f"/{scripts_path}/.hand_memory.json"):
-        with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+    if not Path(scripts_path, ".hand_memory.json").exists():
+        with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
             json.dump(hand, hand_file)
     else:
-        with open(f"/{scripts_path}/.hand_memory.json", "r") as hand_file:
+        with open(Path(scripts_path, ".hand_memory.json"), "r") as hand_file:
             hand = json.load(hand_file)
 
     for index, item in enumerate(hand["items"]):
         if not os.path.exists(item):
             hand["items"].remove(item)
-    with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+    with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
         json.dump(hand, hand_file)
 
     if len(sys.argv) == 1:
-        with open(f"/{scripts_path}/.hand_memory.json", "r") as hand_file:
+        with open(Path(scripts_path, ".hand_memory.json"), "r") as hand_file:
             hand = json.load(hand_file)
 
         if len(hand["items"]) > 0:
@@ -76,7 +77,7 @@ def init():
     elif len(sys.argv) == 2 and sys.argv[1] == "get":
         if os.getcwd() not in hand["items"]:
             hand["items"].append(os.getcwd())
-            with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+            with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
                 json.dump(hand, hand_file)
             screen.print(f"The hand successfully caught '{os.getcwd()}'", style="green")
         else:
@@ -84,35 +85,37 @@ def init():
 
     elif len(sys.argv) > 2 and sys.argv[1] == "get":
         for item in sys.argv[2:]:
-            if os.path.exists(f"{os.getcwd()}/{item}"):
-                if f"{os.getcwd()}/{item}" not in hand["items"]:
-                    hand["items"].append(f"{os.getcwd()}/{item}")
-                    screen.print(f"The hand successfully caught '{os.getcwd()}/{item}'", style="green")
+            item = Path(item)
+            if Path(os.getcwd(), item.name).exists():
+                if f"{Path(os.getcwd(), item.name)}" not in hand["items"]:
+                    hand["items"].append(f"{Path(os.getcwd(), item.name)}")
+                    screen.print(f"The hand successfully caught '{Path(os.getcwd(), item.name)}'", style="green")
                 else:
-                    screen.print(f"Error: '{os.getcwd()}/{item}' already in the hand!", style="red")
+                    screen.print(f"Error: '{Path(os.getcwd(), item.name)}' already in the hand!", style="red")
             else:
-                screen.print(f"Error: '{os.getcwd()}/{item}' not found!", style="red")
+                screen.print(f"Error: '{Path(os.getcwd(), item.name)}' not found!", style="red")
 
-        with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+        with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
             json.dump(hand, hand_file)
 
     elif len(sys.argv) == 2 and sys.argv[1] == "drop":
         last_action = []
         for item in hand["items"]:
-            if os.path.isfile(item):
-                if os.path.exists(f"{os.getcwd()}/{item.split('/')[-1]}"):
-                    screen.print(f"Error: '{item.split('/')[-1]}' already exists!", style="red")
+            item = Path(item)
+            if item.is_file():
+                if Path(os.getcwd(), item.name).exists():
+                    screen.print(f"Error: '{item.name}' already exists!", style="red")
                 else:
-                    shutil.copyfile(item, f"{os.getcwd()}/{item.split('/')[-1]}")
-                    screen.print(f"'{os.getcwd()}/{item.split('/')[-1]}' was copied successfully!", style="green")
-                    last_action.append(f"{os.getcwd()}/{item.split('/')[-1]}")
+                    shutil.copyfile(item, item.name)
+                    screen.print(f"'{item}' was copied successfully!", style="green")
+                    last_action.append(f"{item}")
             else:
-                if os.path.exists(f"{os.getcwd()}/{item.split('/')[-1]}"):
-                    screen.print(f"Error: '{item.split('/')[-1]}' already exists!", style="red")
+                if Path(os.getcwd(), item.name).exists():
+                    screen.print(f"Error: '{item.name}' already exists!", style="red")
                 else:
-                    shutil.copytree(item, f"{os.getcwd()}/{item.split('/')[-1]}")
-                    screen.print(f"'{os.getcwd()}/{item.split('/')[-1]}' was copied successfully!", style="green")
-                    last_action.append(f"{os.getcwd()}/{item.split('/')[-1]}")
+                    shutil.copytree(item, item.name)
+                    screen.print(f"'{item}' was copied successfully!", style="green")
+                    last_action.append(f"{Path(os.getcwd(), item.name)}")
 
         if len(last_action) > 0:
             add_last_drop(last_action)
@@ -124,24 +127,21 @@ def init():
         for index in indexes:
             if index.isdigit():
                 index = int(index) - 1
-                if os.path.isfile(hand['items'][index]):
-                    if os.path.exists(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}"):
-                        screen.print(f"Error: '{os.getcwd()}/{hand['items'][index].split('/')[-1]}' already exists!",
-                                     style="red")
+                item = Path(hand["items"][index])
+                if item.is_file():
+                    if Path(os.getcwd(), item.name).exists():
+                        screen.print(f"Error: '{item.name}' already exists!", style="red")
                     else:
-                        shutil.copyfile(hand['items'][index], f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}")
-                        screen.print(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]} was copied successfully!",
-                                      style="green")
-                        last_action.append(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}")
+                        shutil.copyfile(item, item.name)
+                        screen.print(f"'{item.name}' was copied successfully!", style="green")
+                        last_action.append(f"{Path(os.getcwd(), item.name)}")
                 else:
-                    if os.path.exists(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}"):
-                        screen.print(f"Error: '{os.getcwd()}/{hand['items'][index].split('/')[-1]}' already exists!",
-                                     style="red")
+                    if Path(os.getcwd(), item.name).exists():
+                        screen.print(f"Error: '{item.name}' already exists!", style="red")
                     else:
-                        shutil.copytree(hand['items'][index], f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}")
-                        screen.print(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]} was copied successfully!",
-                            style="green")
-                        last_action.append(f"{os.getcwd()}/{hand['items'][index].split('/')[-1]}")
+                        shutil.copytree(item, item.name)
+                        screen.print(f"'{item.name}' was copied successfully!", style="green")
+                        last_action.append(f"{Path(os.getcwd(), item.name)}")
             else:
                 screen.print(f"Error: Index is not a digit!", style="red")
 
@@ -151,7 +151,7 @@ def init():
     elif len(sys.argv) == 2 and sys.argv[1] == "-w":
         if len(hand["items"]) > 0:
             hand["items"].clear()
-            with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+            with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
                 json.dump(hand, hand_file)
             screen.print(f"The Hand washed successfully", style="green")
         else:
@@ -169,12 +169,13 @@ def init():
             else:
                 screen.print(f"Error: Index is not a digit!", style="red")
 
-        for item in hand["items"]:
-            if item in garbages:
+
+        for item in garbages:
+            if item in hand["items"]:
                 hand["items"].remove(item)
                 screen.print(f"'{item}' removed successfully", style="green")
 
-        with open(f"/{scripts_path}/.hand_memory.json", "w") as hand_file:
+        with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
             json.dump(hand, hand_file)
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-z":
