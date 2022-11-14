@@ -24,7 +24,7 @@ def init():
             screen.print("Error: There is a directory with this name!", style="red")
         else:
             os.mkdir(dir_path)
-            screen.print(f"'{sys.argv[1]}' directory successfully created.", style='green')
+            screen.print(f"'{dir_path.name}' directory successfully created.", style='green')
 
     else:
         screen.print("Error: Unknown parameters!", style="red")

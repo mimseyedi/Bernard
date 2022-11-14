@@ -23,11 +23,11 @@ def init():
         if file_path.exists():
             if file_path.is_file():
                 os.remove(file_path)
-                screen.print(f"'{sys.argv[1]}' file successfully removed!", style="green")
+                screen.print(f"'{file_path.name}' file successfully removed!", style="green")
             else:
                 screen.print("Error: You must choose a file!", style="red")
         else:
-            screen.print(f"Error: '{sys.argv[1]}' file not found!", style="red")
+            screen.print(f"Error: '{file_path.name}' file not found!", style="red")
 
     else:
         screen.print("Error: Unknown parameters!", style="red")
