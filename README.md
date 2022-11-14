@@ -1,5 +1,7 @@
 # Bernard
- 
+
+<img src="https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard_Image.png">
+
 Bernard is an assistant and application to customize the terminal to do the tasks you need, which can be run on all bash Unix shells.
 Bernard consists of a script reader and a directory of scripts. With the help of script reader, Bernard can read and execute smaller programs by Python interpreter.
 In this way, it will be easier to develop Bernard by writing small and separate programs.
