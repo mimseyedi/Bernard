@@ -4,11 +4,12 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
+finally:
+    from rich.console import Console
+    screen = Console()
 
 
 def init():
-    screen = Console()
-
     if len(sys.argv) == 1:
         subprocess.run(["clear"])
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":

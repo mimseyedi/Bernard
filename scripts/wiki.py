@@ -6,11 +6,14 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
+    from rich.console import Console
     screen = Console()
 try:
     import wikipedia
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "wikipedia"], stdout=subprocess.DEVNULL)
+finally:
+    import wikipedia
 
 
 guide_message = """With the wiki command, you can access to Wikipedia information about things.

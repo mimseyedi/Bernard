@@ -5,6 +5,7 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
+    from rich.console import Console
     screen = Console()
 
 

@@ -5,6 +5,7 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
+    from rich.console import Console
     screen = Console()
 try:
     import bs4
@@ -14,6 +15,8 @@ try:
     import googlesearch
 except ImportError as package:
     subprocess.run([sys.executable, "-m", "pip", "install", "google"], stdout=subprocess.DEVNULL)
+finally:
+    import googlesearch
 
 
 guide_message = """With the google command, you can experience a quick search in Google!

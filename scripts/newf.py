@@ -6,11 +6,11 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
+    from rich.console import Console
     screen = Console()
 
 
 def init():
-
     if len(sys.argv) == 1:
         screen.print("Error: You must choose a name for your file!", style="red")
 

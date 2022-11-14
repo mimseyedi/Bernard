@@ -24,16 +24,22 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
+finally:
+    from rich.console import Console
+    screen = Console()
 try:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
     from prompt_toolkit.completion import WordCompleter
 except ImportError as module:
-    subprocess.run([sys.executable, "-m", "pip", "install", "prompt_toolkit"], stdout=subprocess.DEVNULL)
+    subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
+finally:
+    from prompt_toolkit import PromptSession
+    from prompt_toolkit.history import InMemoryHistory
+    from prompt_toolkit.completion import WordCompleter
 
 
 def init():
-    screen = Console()
     subprocess.run(["clear"])
 
     with open("settings.json", "r") as settings_file:
