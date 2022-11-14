@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import subprocess
+from pathlib import Path
 try:
     from rich.console import Console
 except ImportError as module:
@@ -25,10 +26,11 @@ def init():
         screen.print(guide_message, style="green")
 
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
-        if os.path.exists(f'{os.getcwd()}/{sys.argv[1]}'):
-            if os.path.isdir(f'{os.getcwd()}/{sys.argv[1]}'):
-                if len(os.listdir(f'{os.getcwd()}/{sys.argv[1]}')) <= 0:
-                    os.rmdir(f'{os.getcwd()}/{sys.argv[1]}')
+        dir_path = Path(os.getcwd(), sys.argv[1])
+        if dir_path.exists():
+            if dir_path.is_dir():
+                if len(os.listdir(dir_path)) <= 0:
+                    os.rmdir(dir_path)
                     screen.print(f"'{sys.argv[1]}' directory successfully removed!", style="green")
                 else:
                     screen.print(f"Error: '{sys.argv[1]}' directory is full!", style="red")
@@ -38,9 +40,10 @@ def init():
             screen.print(f"Error: '{sys.argv[1]}' directory not found!", style="red")
 
     elif len(sys.argv) == 3 and sys.argv[1] == "-f":
-        if os.path.exists(f'{os.getcwd()}/{sys.argv[2]}'):
-            if os.path.isdir(f'{os.getcwd()}/{sys.argv[2]}'):
-                shutil.rmtree(f'{os.getcwd()}/{sys.argv[2]}')
+        dir_path = Path(os.getcwd(), sys.argv[2])
+        if dir_path.exists():
+            if dir_path.is_dir():
+                shutil.rmtree(dir_path)
                 screen.print(f"'{sys.argv[2]}' directory successfully removed!", style="green")
             else:
                 screen.print("Error: You must choose a directory!", style="red")
