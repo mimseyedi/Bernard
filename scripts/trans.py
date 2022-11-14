@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from pathlib import Path
 try:
     import googletrans
 except ImportError as module:
@@ -46,11 +47,11 @@ def init():
         screen.print(f"Language is {language}", style="green")
 
     elif len(sys.argv) == 4 and sys.argv[1] == "-f":
-        file = f"{os.getcwd()}/{sys.argv[2]}" if sys.argv[2] in os.listdir() else sys.argv[2]
-        if os.path.exists(file):
-            if os.path.isfile(file):
-                if file.endswith(".txt"):
-                    with open(file, "r") as t_file:
+        file_path = Path(os.getcwd(), sys.argv[2])
+        if file_path.exists():
+            if file_path.is_file():
+                if file_path.suffix == ".txt":
+                    with open(file_path, "r") as t_file:
                         try:
                             translated_text = translator.translate(text=t_file.read(), dest=sys.argv[3]).text
                             screen.print(translated_text)
@@ -64,16 +65,16 @@ def init():
             screen.print("Error: File can not found!", style="red")
 
     elif len(sys.argv) == 5 and sys.argv[1] == "-fo":
-        file = f"{os.getcwd()}/{sys.argv[2]}" if sys.argv[2] in os.listdir() else sys.argv[2]
-        if os.path.exists(file):
-            if os.path.isfile(file):
-                if file.endswith(".txt"):
-                    with open(file, "r") as t_file:
+        file_path = Path(os.getcwd(), sys.argv[2])
+        if file_path.exists():
+            if file_path.is_file():
+                if file_path.suffix == ".txt":
+                    with open(file_path, "r") as t_file:
                         try:
                             translated_text = translator.translate(text=t_file.read(), dest=sys.argv[3]).text
-                            if not os.path.exists(f"{os.getcwd()}/{sys.argv[4]}"):
+                            if not Path(os.getcwd(), sys.argv[4]).exists():
                                 if sys.argv[4].endswith(".txt"):
-                                    with open(f"{os.getcwd()}/{sys.argv[4]}", "w") as dest_file:
+                                    with open(Path(os.getcwd(), sys.argv[4]), "w") as dest_file:
                                         dest_file.write(translated_text)
                                         screen.print(f"The '{sys.argv[2]}' was successfully translated in the '{sys.argv[4]}'",
                                                      style="green")
