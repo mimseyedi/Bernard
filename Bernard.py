@@ -19,6 +19,7 @@ import sys
 import json
 import sqlite3
 import subprocess
+from pathlib import Path
 from datetime import datetime
 try:
     from rich.console import Console
@@ -51,8 +52,7 @@ def init():
     season = PromptSession(history=InMemoryHistory())
 
     while True:
-        current_dir = list()
-        current_dir.append(os.getcwd().split('/'))
+        current_dir = Path(os.getcwd()).name
         items = os.listdir(os.getcwd())
 
         for item in items:
@@ -63,15 +63,17 @@ def init():
 
         autocompleter = WordCompleter(sorted(items), ignore_case=False)
 
-        cmd_input = season.prompt(f'➜ {current_dir[0][-1]}: ', completer=autocompleter).lstrip().split()
+        cmd_input = season.prompt(f'➜ {current_dir}: ', completer=autocompleter).lstrip().split()
 
         if len(cmd_input) > 0:
             if cmd_input[0] not in ["home", "goto", "back", "exit"] :
                 main_command = cmd_input[0] + '.py'
                 parameters = ' '.join(cmd_input[1:])
 
-                if os.path.exists(f'{scripts_path}/{main_command}'):
-                    os.system(f'{sys.executable} {scripts_path}/{main_command} {parameters}')
+                script_path = Path(scripts_path, main_command)
+                
+                if script_path.exists():
+                    os.system(f'{sys.executable} {script_path} {parameters}')
                 else:
                     screen.print(f"Error: '{main_command[:-3]}' command not found!", style="red")
 
@@ -90,9 +92,10 @@ def init():
                     screen.print("With the goto command, you can change path location and move between directories.",
                                   style="green")
                 elif len(cmd_input) == 2 and cmd_input[1] != "-h":
-                    if os.path.exists(f'{os.getcwd()}/{cmd_input[1]}'):
-                        if os.path.isdir(f'{os.getcwd()}/{cmd_input[1]}'):
-                            os.chdir(f'{os.getcwd()}/{cmd_input[1]}')
+                    destination = Path(os.getcwd(), cmd_input[1])
+                    if destination.exists():
+                        if destination.is_dir():
+                            os.chdir(destination)
                         else:
                             screen.print("Error: you must select a directory!", style="red")
                     else:
