@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from pathlib import Path
 try:
     from rich.console import Console
     from rich.syntax import Syntax
@@ -21,9 +22,9 @@ def init():
                      style="green")
 
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
-        file = f"{os.getcwd()}/{sys.argv[1]}" if sys.argv[1] in os.listdir() else sys.argv[1]
-        if os.path.exists(file):
-            if os.path.isfile(file):
+        file_path = Path(os.getcwd(), sys.argv[1])
+        if file_path.exists():
+            if file_path.is_file():
                 language = {".c": "c", ".h": "c", ".cpp": "c++", ".hpp": "c++",
                             ".cs": "c#", ".css": "css", ".dart": "dart", ".go": "go",
                             ".html": "html", ".htm": "html", ".xhtml": "html", ".java": "java",
@@ -32,13 +33,13 @@ def init():
                             ".sql": "sql", ".swift": "swift", ".ts": "ts", ".vb": "vbnet",
                             ".xml": "xml", ".txt": "txt"}
                 try:
-                    with open(file, "r") as open_file:
-                        screen.print(Syntax(open_file.read(), language[f".{file.split('.')[-1]}"],
+                    with open(file_path, "r") as open_file:
+                        screen.print(Syntax(open_file.read(), language[file_path.suffix],
                                             theme='monokai', line_numbers=True))
                 except UnicodeDecodeError:
-                    screen.print(f"Error: Cant read this file! -> '{sys.argv[1]}'", style="red")
+                    screen.print(f"Error: Cant read this file! -> '{file_path.name}'", style="red")
                 except KeyError:
-                    screen.print(f"Error: Cant read this file! -> '{sys.argv[1]}'", style="red")
+                    screen.print(f"Error: Cant read this file! -> '{file_path.name}'", style="red")
             else:
                 screen.print("Error: You must select a file!", style="red")
         else:
