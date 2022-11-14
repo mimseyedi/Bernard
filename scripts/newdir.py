@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from pathlib import Path
 try:
     from rich.console import Console
 except ImportError as module:
@@ -18,10 +19,11 @@ def init():
         screen.print("With the newdir command, you can create a directory in the current location.", style="green")
 
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
-        if os.path.exists(f'{os.getcwd()}/{sys.argv[1]}'):
+        dir_path = Path(os.getcwd(), sys.argv[1])
+        if dir_path.exists():
             screen.print("Error: There is a directory with this name!", style="red")
         else:
-            os.mkdir(f'{os.getcwd()}/{sys.argv[1]}')
+            os.mkdir(dir_path)
             screen.print(f"'{sys.argv[1]}' directory successfully created.", style='green')
 
     else:
