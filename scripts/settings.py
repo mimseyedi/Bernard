@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import hashlib
+from pathlib import Path
 from getpass import getpass
 try:
     from rich.console import Console
@@ -19,9 +20,9 @@ Parameters:
 -ch change home path"""
 
 
-path_of_file = os.path.abspath(__file__).split("/")
-base_path = '/'.join(path_of_file[1:-2])
-with open(f"/{base_path}/settings.json", "r") as settings_file:
+path_of_file = Path(__file__)
+base_path = path_of_file.parent.parent
+with open(Path(base_path, "settings.json"), "r") as settings_file:
     settings = json.load(settings_file)
 
 
@@ -49,7 +50,7 @@ def init():
             new_password = getpass("Enter new password: ")
             confirm_password = getpass("Confirm new password: ")
             if new_password == confirm_password:
-                with open(f"/{base_path}/settings.json", "w") as settings_file:
+                with open(Path(base_path, "settings.json"), "w") as settings_file:
                     new_hashed_password = convert_to_sha(new_password)
                     settings["password"] = new_hashed_password
                     json.dump(settings, settings_file)
@@ -67,11 +68,10 @@ def init():
         authenticated = authentication(hashed_password)
         if authenticated:
             new_path = input("Enter new home path: ")
-            if os.path.exists(new_path) and os.path.isdir(new_path):
-                if new_path in os.listdir():
-                    new_path = f"{os.getcwd()}/{new_path}"
-                with open(f"/{base_path}/settings.json", "w") as settings_file:
-                    settings["path_settings"]["home_path"] = new_path
+            new_path = Path(os.getcwd(), new_path)
+            if new_path.exists() and new_path.is_dir():
+                with open(Path(base_path, "settings.json"), "w") as settings_file:
+                    settings["path_settings"]["home_path"] = f"{new_path}"
                     json.dump(settings, settings_file)
 
                 screen.print("Home path successfully changed!", style="green")
