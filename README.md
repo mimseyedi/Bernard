@@ -13,12 +13,16 @@ In this way, it will be easier to develop Bernard by writing small and separate 
 * [How to use Bernard?](#bernard_use)
 * [Executable Bernard](#bernard_exe)
 * [Development of Bernard](#bernard_dev)
+    
+    * [Rule 1: Everything starts in the init function](#rule1)
+    * [Rule 2: Bernard is always looking for the scripts directory](#rule2)
+    * [Rule 3: Guides are required](#rule3)
+    * [Rule 4: Do not disturb the settings](#rule4)
+    * [Rule 5: All scripts must be inplace](#rule5)
+    * [Rule 6: Don't forget the dependencies!](#rule6)
+    * [Rule 7: Always use the pathlib module for routing](#rule7)
+    * [Rule 8: Versatility of terminals](#rule8)
 
-    * [Rule 1: Bernard is always looking for the scripts directory](#rule1)
-    * [Rule 2: Guides are required](#rule2)
-    * [Rule 3: Do not disturb the settings](#rule3)
-    * [Rule 4: All scripts must be inplace](#rule4)
-    * [Rule 5: Don't forget the dependencies!](#rule5)
 
 
 ## What is Bernard? <a class="anchor" id="bernard_what"></a>
@@ -51,7 +55,7 @@ and make any changes you like to customize your terminal and share it with other
 ## How to use Bernard? <a class="anchor" id="bernard_use"></a>
 To install Bernard, it is enough to download the bernard_installation.py file:
 ```
-$ curl -o Bernard_installation.py https://raw.githubusercontent.com/mimseyedi/bernard/master/Bernard_installation.py
+$ curl -o Bernard_installation.py https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard_installation.py
 ```
 
 Then you need to run the installer file through the Python3 interpreter:
@@ -67,16 +71,39 @@ python Bernard.py
 ```
 
 Bernard is now running on your terminal!
-You can install and update new scripts with the help of install and update commands.
+You can install and update new scripts with the help of scripts command:
 ```
-install script_name
-update script_name
+scripts install script_name
+scripts update script_name
 ```
+
+Also you can find new scripts:
+```
+scripts -n
+```
+
+Or find out about available updates:
+```
+scripts -u
+```
+
 
 You can also use the -h parameter to find out the help of any command!
 For example:
 ```
-deldir -h
+trans -h
+```
+Output:
+```
+With the trans command, you can translate words into different 
+natural languages or receive a complete file with the translated 
+output.
+
+Parameters:
+trans <word> <language> -> exmaple: trans hello persian
+-d detect language
+-f read file to translate
+-fo translate file with .txt output
 ```
 
 
@@ -86,6 +113,7 @@ deldir -h
 ## Executable Bernard: <a class="anchor" id="bernard_exe"></a>
 If you want Bernard to become an executable directly in the terminal:
 
+### In Unix Systems (Linux/macOs):
 **first step:**
 
 The first thing you’ll need to do is mark your Python script as executable in the file system, like so
@@ -106,6 +134,13 @@ Change the file extension to .command then run the file with double-click
 
 for more information: https://dbader.org/blog/how-to-make-command-line-commands-with-python
 
+### In Windows:
+On Windows systems, there is no notion of an “executable mode”. The Python installer automatically associates .py files with python.exe so that a double-click on a Python file will run it as a script. The extension can also be .pyw, in that case, the console window that normally appears is suppressed.
+
+Also you can use **pyinstaller** module:
+```
+python -m pip install pyinstaller
+```
 
 * [Table of contents](#contents)
 
@@ -113,14 +148,26 @@ for more information: https://dbader.org/blog/how-to-make-command-line-commands-
 ## Development of Bernard: <a class="anchor" id="bernard_dev"></a>
 There are rules for the development of Bernard, if you want to be a part of the development of this program, you must follow them. I also encourage you to make your own terminal and make your own rules and have fun doing it.
 
-### Rule 1: Bernard is always looking for the scripts directory <a class="anchor" id="rule1"></a>
+## Rule 1: Everything starts in the init function <a class="anchor" id="rule1"></a>
+For easier reading, the starting point of the program is from the init function.
+Always write your executable code from this point:
+```python
+def init():
+    #start here
+    pass
+
+if __name__ == "__main__":
+    init()
+```
+
+
+## Rule 2: Bernard is always looking for the scripts directory <a class="anchor" id="rule2"></a>
 All scripts or small programs that are executed by Bernard's script reader are located in the scripts directory, and Bernard will find them in the scripts directory by the file name of these scripts and execute them if they exist.
 So please don't change the script directory name or path!
 ```
 .
 └── Bernard/
     ├── Bernard.py
-    ├── logs.db
     ├── settings.json
     └── scripts/
         ├── cal.py
@@ -132,22 +179,24 @@ So please don't change the script directory name or path!
         └── hash.py
 ```
         
-### Rule 2: Guides are required <a class="anchor" id="rule2"></a>
+## Rule 3: Guides are required <a class="anchor" id="rule3"></a>
 Every script that is written must accept a parameter called **-h** so that the usage guide and necessary explanations about the desired script or command can be received. You can easily control this parameter using **sys.argv**
 ```
-items -h
+orgdir -h
 ```
 output:
 ```
-With the items command, you can see all items in directories.
+With the orgdir command, you can organize and sort your 
+directories in two classic or custom ways.
 
 Parameters:
--a show all items include hidden files
+-c classic way -> example: orgdir -c
+-x custom way -> exmaple: orgdir -x .pdf Doc
 ```
 
 
 
-### Rule 3: Do not disturb the settings <a class="anchor" id="rule3"></a>
+## Rule 4: Do not disturb the settings <a class="anchor" id="rule4"></a>
 A json file called settings is located in the main location of the Bernard, which contains important information such as: home path, script directory path, root path and user password hash.
 Please do not manipulate this file and do not change its path in any way.
 To change this file, first familiarize yourself with its structure and do it as much as you can using the **settings** command.
@@ -159,12 +208,12 @@ To change this file, first familiarize yourself with its structure and do it as 
 ```
 
 
-### Rule 4: All scripts must be inplace <a class="anchor" id="rule4"></a>
+## Rule 5: All scripts must be inplace <a class="anchor" id="rule5"></a>
 All scripts must be inplace! In the sense that their final processing should be done by themselves and not return a value. Bernard's script reader is not able to receive data from scripts and can only call them to do their work.
 So be careful! Forget the **return**!
 
 
-### Rule 5: Don't forget the dependencies! <a class="anchor" id="rule5"></a>
+## Rule 6: Don't forget the dependencies! <a class="anchor" id="rule6"></a>
 If you want to use a non-standard library or module for the script you are writing, be sure to install it according to the desired protocols at the beginning of the script so as not to encounter an error.
 However, it is better to use standard and reliable modules as much as you can.
 ```python
@@ -174,11 +223,13 @@ import subprocess
 try:
     import rich
 except ImportError as module:
-    python = sys.executable
-    subprocess.check_call([python, '-m', 'pip', 'install', module.name], stdout=subprocess.DEVNULL)
+    python_interpreter = sys.executable
+    subprocess.run([python_interpreter, '-m', 'pip', 'install', module.name], stdout=subprocess.DEVNULL)
+finally:
+    import rich
 ```
 
-another way:
+Another way:
 
 ```python
 import sys
@@ -190,6 +241,46 @@ installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 
 if missing:
-    python = sys.executable
-    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+    python_interpreter = sys.executable
+    subprocess.check_call([python_interpreter, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
 ```
+
+## Rule 7: Always use the pathlib module for routing
+
+Since paths or addresses are regulated differently in different operating systems, these paths must be written dynamically to run without problems. For this, the **pathlib** module is the best and simplest solution. With this module, you can connect the addresses dynamically and create the desired route. This module correctly corrects the path according to the operating system on which the program is running.
+
+For example:
+```python
+import os
+from pathlib import Path
+
+print(Path(os.getcwd(), "test.txt"))
+```
+
+Output in Unix systems(Linux/macOS):
+```
+/home/user/Desktop/test.txt
+```
+
+Output in Windows:
+```
+C:\Users\user\Desktop\test.txt
+```
+
+## Rule 8: Versatility of terminals <a class="anchor" id="rule8"></a>
+If you want to use a specific command in the terminal in your scripts, make sure that this command exists in all operating systems, otherwise you have to do the adaptation process:
+```python
+import platform
+import subprocess
+
+os = platform.system()
+
+if os in ["Linux", "Darwin"]:
+    subprocess.run(["clear"])
+    
+elif os == "Windows":
+    subprocess.run(["cls"])
+```
+
+
+
