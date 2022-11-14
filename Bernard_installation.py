@@ -24,6 +24,7 @@ import sys
 import json
 import hashlib
 import subprocess
+from pathlib import Path
 from getpass import getpass
 try:
     import requests
@@ -43,27 +44,25 @@ finally:
 
 def installation_operation():
     home_path = input("Please enter home path: ")
-    if os.path.exists(home_path):
-        if os.path.isdir(home_path):
-            if home_path in os.listdir():
-                home_path = f"{os.getcwd()}/{home_path}"
-
+    home_path = Path(os.getcwd(), home_path)
+    if home_path.exists():
+        if home_path.is_dir():
             user_password = getpass("Please enter a new password: ")
             confirm_password = getpass("Please confirm password: ")
 
             if user_password == confirm_password:
                 os.mkdir("Bernard")
-                os.chdir(f"{os.getcwd()}/Bernard")
+                os.chdir(Path(os.getcwd(), "Bernard"))
                 os.mkdir("scripts")
 
                 sha_256 = hashlib.sha256()
                 sha_256.update(str(user_password).encode('UTF-8'))
                 hashed_password = sha_256.hexdigest()
 
-                settings = {"path_settings": {"scripts_path": f"{os.getcwd()}/scripts",
-                                              "home_path": home_path,
-                                              "root_path": os.getcwd()},
-                            "password": hashed_password}
+                settings = {"path_settings": {"scripts_path": f"{Path(os.getcwd(), 'scripts')}",
+                                              "home_path": f"{home_path}",
+                                              "root_path": f"{os.getcwd()}",
+                            "password": hashed_password}}
 
                 with open("settings.json", "w") as settings_file:
                     json.dump(settings, settings_file)
@@ -76,9 +75,10 @@ def installation_operation():
                 screen.print("(### The root file was successfully installed!)", style="green")
 
                 scripts = ["cal.py", "clear.py", "date.py", "deldir.py", "delf.py", "gcc.py",
-                           "hash.py", "install.py", "items.py", "map.py", "newdir.py",
-                           "newf.py", "py.py", "roll.py", "settings.py", "system.py",
-                           "time.py", "timer.py", "uninstall.py", "update.py", "void.py"]
+                           "google.py", "hand.py", "hash.py", "items.py", "map.py", "newdir.py",
+                           "newf.py", "open.py", "orgdir.py", "ping.py", "py.py", "read.py",
+                           "roll.py", "scripts.py", "settings.py", "sort.py", "system.py",
+                           "time.py", "timer.py", "trans.py", "tree.py", "void.py", "wiki.py"]
 
                 for script in scripts:
                     request_scripts = requests.get(
@@ -93,7 +93,7 @@ def installation_operation():
 
                     screen.print(f"(### The {script} file was successfully installed!)", style="green")
 
-                dep_packages = ["prompt_toolkit", "rich"]
+                dep_packages = ["prompt-toolkit==3.0.16", "rich"]
                 for package in dep_packages:
                     subprocess.run([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
 
@@ -115,25 +115,26 @@ def init():
     opt_inst_path = input("Choose a option (1/2): ")
 
     if opt_inst_path == '1':
-        if os.path.exists(f"{os.getcwd()}/Bernard") and os.path.isdir(f"{os.getcwd()}/Bernard"):
+        if Path(os.getcwd(), "Bernard").exists() and Path(os.getcwd(), "Bernard").is_dir():
             screen.print("Error: A directory named Bernard already exists in this path", style="red")
         else:
             installation_operation()
     else:
         install_path = input("Enter custom location: ")
+        install_path = Path(install_path)
 
-        if os.path.exists(install_path):
-            if os.path.isdir(install_path):
+        if install_path.exists():
+            if install_path.is_dir():
                 if install_path in os.listdir():
-                    install_path = f"{os.getcwd()}/{install_path}"
-                if os.path.exists(f"{install_path}/Bernard") and os.path.isdir(f"{install_path}/Bernard"):
+                    install_path = f"{Path(os.getcwd(), install_path)}"
+                if Path(os.getcwd(), install_path, "Bernard").exists() and Path(os.getcwd(), install_path, "Bernard").is_dir():
                     screen.print("Error: A directory named Bernard already exists in this path", style="red")
                 else:
                     installation_operation()
             else:
                 screen.print("Error: You must select a directory!", style="red")
         else:
-            screen.print("Error: Location not found!", style="red")
+            screen.print("Error: Path not found!", style="red")
 
 
 if __name__ == "__main__":
