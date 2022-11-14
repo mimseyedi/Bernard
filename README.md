@@ -113,7 +113,7 @@ trans <word> <language> -> exmaple: trans hello persian
 ## Executable Bernard: <a class="anchor" id="bernard_exe"></a>
 If you want Bernard to become an executable directly in the terminal:
 
-### In Unix Systems (Linux/macOs):
+### In Unix Systems (Linux/macOS):
 **first step:**
 
 The first thing you’ll need to do is mark your Python script as executable in the file system, like so
@@ -236,13 +236,14 @@ import sys
 import subprocess
 import pkg_resources
 
-required = {'rich', 'prompt_toolkit'}
+required = {'rich', 'requests'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 
 if missing:
     python_interpreter = sys.executable
     subprocess.check_call([python_interpreter, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+
 ```
 
 ## Rule 7: Always use the pathlib module for routing
