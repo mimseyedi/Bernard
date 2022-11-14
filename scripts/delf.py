@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from pathlib import Path
 try:
     from rich.console import Console
 except ImportError as module:
@@ -18,9 +19,10 @@ def init():
         screen.print("With the delf command, you can remove a file.", style="green")
 
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
-        if os.path.exists(f'{os.getcwd()}/{sys.argv[1]}'):
-            if os.path.isfile(f'{os.getcwd()}/{sys.argv[1]}'):
-                os.remove(f'{os.getcwd()}/{sys.argv[1]}')
+        file_path = Path(os.getcwd(), sys.argv[1])
+        if file_path.exists():
+            if file_path.is_file():
+                os.remove(file_path)
                 screen.print(f"'{sys.argv[1]}' file successfully removed!", style="green")
             else:
                 screen.print("Error: You must choose a file!", style="red")
