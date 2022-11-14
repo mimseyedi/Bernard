@@ -268,6 +268,8 @@ Output in Windows:
 C:\Users\user\Desktop\test.txt
 ```
 
+For more information visit: https://medium.com/@ageitgey/python-3-quick-tip-the-easy-way-to-deal-with-file-paths-on-windows-mac-and-linux-11a072b58d5f
+
 ## Rule 8: Versatility of terminals <a class="anchor" id="rule8"></a>
 If you want to use a specific command in the terminal in your scripts, make sure that this command exists in all operating systems, otherwise you have to do the adaptation process:
 ```python
