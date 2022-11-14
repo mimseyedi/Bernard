@@ -1,4 +1,5 @@
 import sys
+import platform
 import subprocess
 import webbrowser
 try:
@@ -37,7 +38,12 @@ def init():
         if is_url(sys.argv[1]):
             webbrowser.open(fix_url(sys.argv[1]))
         else:
-            subprocess.call(["open", sys.argv[1]])
+            if platform.system() == "Darwin":
+                subprocess.call(["open", sys.argv[1]])
+            elif platform.system() == "Linux":
+                subprocess.call(["xdg-open", sys.argv[1]])
+            elif platform.system() == "Windows":
+                subprocess.call(["start", sys.argv[1]])
 
     elif len(sys.argv) == 3 and sys.argv[1] != "-h":
         if is_url(sys.argv[1]):
