@@ -3,6 +3,7 @@ import sys
 import json
 import hashlib
 import subprocess
+from pathlib import Path
 from getpass import getpass
 try:
     import requests
@@ -31,11 +32,11 @@ finally:
     screen = Console()
 
 
-path_of_file = os.path.abspath(__file__).split("/")
-base_path = '/'.join(path_of_file[1:-2])
-scripts_path = '/'.join(path_of_file[1:-1])
+path_of_file = Path(__file__)
+base_path = path_of_file.parent.parent
+scripts_path = path_of_file.parent
 
-with open(f"/{base_path}/settings.json", "r") as settings_file:
+with open(Path(base_path, "settings.json"), "r") as settings_file:
     settings = json.load(settings_file)
 
 
@@ -59,7 +60,7 @@ def authentication(password):
 
 def download_script(url, script_name):
     script = requests.get(url, stream=True)
-    with open(f"/{scripts_path}/{script_name}.py", "wb") as script_file:
+    with open(Path(scripts_path, f"{script_name}.py"), "wb") as script_file:
         total_length = int(script.headers.get('content-length'))
         for chunk in progress.bar(script.iter_content(chunk_size=1024),
                                   expected_size=(total_length / 1024) + 1):
@@ -70,7 +71,7 @@ def download_script(url, script_name):
 
 def init():
     if len(sys.argv) == 1:
-        scripts = sorted(os.listdir(f"/{scripts_path}"))
+        scripts = sorted(os.listdir(scripts_path))
         max_length = 0
         for item in scripts:
             if item.endswith(".py"):
@@ -94,7 +95,7 @@ def init():
         screen.print(guide_message, style="green")
 
     elif len(sys.argv) == 2 and sys.argv[1] == "-n":
-        installed_scripts = sorted(os.listdir(f"/{scripts_path}"))
+        installed_scripts = sorted(os.listdir(scripts_path))
         request = requests.get("https://github.com/mimseyedi/Bernard/tree/master/scripts")
         soup = BeautifulSoup(request.text, "lxml")
 
@@ -129,7 +130,7 @@ def init():
                 request = requests.get(
                     f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{script}")
                 if request.status_code == 200:
-                    with open(f"/{scripts_path}/{script}", "r") as current_file:
+                    with open(Path(scripts_path, script), "r") as current_file:
                         current_script = current_file.read()
 
                     if current_script != request.text:
@@ -154,11 +155,12 @@ def init():
             screen.print(f"Error: No updates found for scripts!", style="red")
 
     elif len(sys.argv) == 3 and sys.argv[1] == "install":
+        script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
         if authentication(user_password):
             request = requests.get(f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[2]}.py")
             if request.status_code == 200:
-                if not os.path.exists(f"/{scripts_path}/{sys.argv[2]}.py"):
+                if not script_path.exists():
                     download_script(
                         f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[2]}.py",
                         script_name=sys.argv[2])
@@ -175,12 +177,13 @@ def init():
             screen.print("Error: Authentication failed!", style="red")
 
     elif len(sys.argv) == 3 and sys.argv[1] == "uninstall":
+        script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
         if authentication(user_password):
-            if os.path.exists(f"/{scripts_path}/{sys.argv[2]}.py"):
+            if script_path.exists():
                 ask_to_uninstall = input("Are you sure? (y/n): ").lower()
                 if ask_to_uninstall == "y":
-                    os.remove(f"/{scripts_path}/{sys.argv[2]}.py")
+                    os.remove(script_path)
                     screen.print(f"'{sys.argv[2]}' script was successfully uninstalled!", style="green")
             else:
                 screen.print(f"Error: '{sys.argv[2]}' script not found!", style="red")
@@ -188,16 +191,17 @@ def init():
             screen.print("Error: Authentication failed!", style="red")
 
     elif len(sys.argv) == 3 and sys.argv[1] == "update":
+        script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
         if authentication(user_password):
-            if os.path.exists(f"/{scripts_path}/{sys.argv[2]}.py"):
+            if script_path.exists():
                 request = requests.get(f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[2]}.py")
                 if request.status_code == 200:
-                    with open(f"/{scripts_path}/{sys.argv[2]}.py", "r") as current_file:
+                    with open(script_path, "r") as current_file:
                         current_script = current_file.read()
 
                     if current_script != request.text:
-                        os.remove(f"/{scripts_path}/{sys.argv[2]}.py")
+                        os.remove(script_path)
                         download_script(
                             f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{sys.argv[2]}.py",
                             script_name=sys.argv[2])
