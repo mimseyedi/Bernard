@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 try:
@@ -11,7 +12,7 @@ finally:
 
 def init():
     if len(sys.argv) == 1:
-        subprocess.run(["clear"])
+        subprocess.call('clear' if os.name == 'posix' else 'cls')
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print("The clear command allows you to clean the screen.", style="green")
     else:

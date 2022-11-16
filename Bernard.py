@@ -41,7 +41,7 @@ finally:
 
 
 def init():
-    subprocess.run(["clear"])
+    subprocess.call('clear' if os.name == 'posix' else 'cls')
 
     with open("settings.json", "r") as settings_file:
         settings = json.load(settings_file)
