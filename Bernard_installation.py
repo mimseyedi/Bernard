@@ -30,15 +30,18 @@ try:
     import requests
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
+    import requests
 try:
     from clint.textui import progress
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
+    from clint.textui import progress
 try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
 finally:
+    from rich.console import Console
     screen = Console()
 
 
