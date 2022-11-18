@@ -16,6 +16,8 @@ Parameters:
 -j Jalali date"""
 
 
+# The function E6 to convert the Gregorian date to Jalali is taken from the following link:
+# https://jdf.scr.ir/jdf/python
 def gregorian_to_jalali(gy, gm, gd):
     g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 
@@ -42,22 +44,31 @@ def gregorian_to_jalali(gy, gm, gd):
     return [jy, jm, jd]
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
+    # By default, the Gregorian date will be displayed!
     if len(sys.argv) == 1:
         now = datetime.datetime.today()
         screen.print(f"{now.day}/{now.month}/{now.year}")
 
+    # If the script is called with the -j parameter.
+    # Convert Gregorian date to Jalali.
     elif len(sys.argv) == 2 and sys.argv[1] == "-j":
         now = datetime.datetime.today()
-        jalali_date = gregorian_to_jalali(now.year, now.month, now.day)
-        screen.print(f"{jalali_date[0]}/{jalali_date[1]}/{jalali_date[2]}")
+        jalali_y, jalali_m, jalali_d = gregorian_to_jalali(now.year, now.month, now.day)
+        screen.print(f"{jalali_y}/{jalali_m}/{jalali_d}")
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print(guide_message, style="green")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

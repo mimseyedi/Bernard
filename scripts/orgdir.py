@@ -18,6 +18,7 @@ Parameters:
 -x custom way -> exmaple: orgdir -x .pdf Doc"""
 
 
+# A function to check the availability of the file with the selected suffix.
 def check_files(suffix):
     for item in os.scandir():
         if item.name.endswith(suffix) and not item.is_dir():
@@ -25,30 +26,36 @@ def check_files(suffix):
     return False
 
 
-def pick_files(files, mode="classic"):
-    if mode == "classic":
-        categories = {'DOCUMENTS': ['.pdf', '.txt', '.csv', '.rtf', '.docx'],
-                      'AUDIO': ['.m4a', '.m4b', '.mp3', '.wav'],
-                      'VIDEOS': ['.mov', '.avi', '.mp4'],
-                      'IMAGES': ['.jpeg', '.jpg', '.png', '.gif'],
-                      'CODES': ['.c', '.cpp', '.py', '.js', '.cs', '.php', '.html', '.css', '.json'],
-                      'COMPRESSED': ['.rar', '.zip']}
+# A function to categorize files in a classic way.
+def pick_files(files):
+    categories = {'DOCUMENTS': ['.pdf', '.txt', '.csv', '.rtf', '.docx'],
+                  'AUDIO': ['.m4a', '.m4b', '.mp3', '.wav'],
+                  'VIDEOS': ['.mov', '.avi', '.mp4'],
+                  'IMAGES': ['.jpeg', '.jpg', '.png', '.gif'],
+                  'CODES': ['.c', '.cpp', '.py', '.js', '.cs', '.php', '.html', '.css', '.json'],
+                  'COMPRESSED': ['.rar', '.zip']}
 
-        for category, suffixes in categories.items():
-            for suffix in suffixes:
-                if suffix == files:
-                    return category
+    for category, suffixes in categories.items():
+        for suffix in suffixes:
+            if suffix == files:
+                return category
 
-        return 'MISC'
+    return 'MISC'
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
     if len(sys.argv) == 1:
         screen.print("Error: You must using parameters!", style="red")
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print(guide_message, style="green")
 
+    # If the script is called with the -c parameter.
+    # Organize the directory in the classical way.
     elif len(sys.argv) == 2 and sys.argv[1] == "-c":
         current_items = os.listdir()
         for item in os.scandir():
@@ -68,6 +75,8 @@ def init():
         else:
             screen.print("Error: This is an organized directory without the need to organize!", style="red")
 
+    # Directory organization by manual method.
+    # Pattern: orgdir -x .py Python
     elif len(sys.argv) == 4 and sys.argv[1] == "-x":
         if check_files(sys.argv[2]):
             for item in os.scandir():
@@ -86,9 +95,11 @@ def init():
         else:
             screen.print("Error: No files with the specified suffix were found to organize!", style="red")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

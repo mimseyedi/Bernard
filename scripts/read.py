@@ -13,14 +13,20 @@ finally:
     screen = Console()
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
     if len(sys.argv) == 1:
         screen.print("Error: You must select a file to read!", style="red")
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print("With the read command, you can read the files that are in text form, and they are highlighted in relation to their extension!",
                      style="green")
 
+    # If the script is called with any parameter except -h.
+    # Reading text form files by the extensions listed in the dictionary.
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
         file_path = Path(os.getcwd(), sys.argv[1])
         if file_path.exists():
@@ -45,9 +51,11 @@ def init():
         else:
             screen.print("Error: File can not found!", style="red")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

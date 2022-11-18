@@ -32,10 +32,11 @@ finally:
     screen = Console()
 
 
+# Get the main path.
 path_of_file = Path(__file__)
 base_path = path_of_file.parent.parent
 scripts_path = path_of_file.parent
-
+# Reading settings file.
 with open(Path(base_path, "settings.json"), "r") as settings_file:
     settings = json.load(settings_file)
 
@@ -51,6 +52,7 @@ update -> scripts update <script_name>
 -n -> show new scripts"""
 
 
+# User authentication function.
 def authentication(password):
     sha_256 = hashlib.sha256()
     sha_256.update(str(password).encode("UTF-8"))
@@ -58,6 +60,7 @@ def authentication(password):
     return True if hashed_password == settings["password"] else False
 
 
+# A function to download scripts.
 def download_script(url, script_name):
     script = requests.get(url, stream=True)
     with open(Path(scripts_path, f"{script_name}.py"), "wb") as script_file:
@@ -69,7 +72,10 @@ def download_script(url, script_name):
                 script_file.flush()
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
+    # Display the scripts installed in the system in two columns.
     if len(sys.argv) == 1:
         scripts = sorted(os.listdir(scripts_path))
         max_length = 0
@@ -91,9 +97,13 @@ def init():
 
         if len(scripts) % 2 != 0: print()
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print(guide_message, style="green")
 
+    # If the script is called with the -n parameter.
+    # Check new scripts in Bernard repo.
     elif len(sys.argv) == 2 and sys.argv[1] == "-n":
         installed_scripts = sorted(os.listdir(scripts_path))
         request = requests.get("https://github.com/mimseyedi/Bernard/tree/master/scripts")
@@ -121,6 +131,8 @@ def init():
         else:
             screen.print(f"Error: No new script found that is not installed!", style="red")
 
+    # If the script is called with the -u parameter.
+    # Check for available updates.
     elif len(sys.argv) == 2 and sys.argv[1] == "-u":
         scripts = sorted(os.listdir(f"/{scripts_path}"))
         available_updates = list()
@@ -154,6 +166,9 @@ def init():
         else:
             screen.print(f"Error: No updates found for scripts!", style="red")
 
+    # If the script is called with the install parameter.
+    # installing scripts from Bernard repo.
+    # Pattern: scripts install orgdir
     elif len(sys.argv) == 3 and sys.argv[1] == "install":
         script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
@@ -176,6 +191,9 @@ def init():
         else:
             screen.print("Error: Authentication failed!", style="red")
 
+    # If the script is called with the uninstall parameter.
+    # Uninstalling scripts.
+    # Pattern: scripts uninstall timer
     elif len(sys.argv) == 3 and sys.argv[1] == "uninstall":
         script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
@@ -190,6 +208,9 @@ def init():
         else:
             screen.print("Error: Authentication failed!", style="red")
 
+    # If the script is called with the update parameter.
+    # Updating scripts from Bernard repo.
+    # Pattern: scripts update hand
     elif len(sys.argv) == 3 and sys.argv[1] == "update":
         script_path = Path(scripts_path, f"{sys.argv[2]}.py")
         user_password = getpass("Enter password: ")
@@ -219,9 +240,11 @@ def init():
         else:
             screen.print("Error: Authentication failed!", style="red")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

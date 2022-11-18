@@ -11,6 +11,8 @@ finally:
     screen = Console()
 
 
+# A class for designing a tree view of directories.
+# https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
     display_filename_prefix_last = '└──'
@@ -87,22 +89,29 @@ class DisplayablePath(object):
         return ''.join(reversed(parts))
 
 
+# A function to check hidden files.
 def is_not_hidden(path):
     return not path.name.startswith(".")
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
     if len(sys.argv) == 1:
         paths = DisplayablePath.make_tree(Path(os.getcwd()), criteria=is_not_hidden)
         for path in paths:
             screen.print(path.displayable())
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print("With the tree command, you can see the tree view of the current directory!", style="green")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

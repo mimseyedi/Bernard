@@ -10,14 +10,20 @@ finally:
     screen = Console()
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
     if len(sys.argv) == 1:
         screen.print("Error: You must select end-point time!", style="red")
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print("A simple timer to count time", style="green")
 
+    # If the script is called with any parameter except -h.
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
+        # Is it checked if the input is a number?
         if sys.argv[1].isdigit():
             start_point = 1
             while start_point <= int(sys.argv[1]):
@@ -28,9 +34,11 @@ def init():
         else:
             screen.print("Error: You must enter a digit!", style="red")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
 
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()

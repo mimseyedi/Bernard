@@ -12,32 +12,46 @@ finally:
     screen = Console()
 
 
+# Start-point.
 def init():
+    # If the script is called alone.
     if len(sys.argv) == 1:
-        subprocess.run(["clear"])
+        # Using the command 'clear' or 'cls' according to the type of operating system.
+        subprocess.call('clear' if os.name == 'posix' else 'cls')
         while True:
             for row in range(os.get_terminal_size()[1]):
                 for col in range(os.get_terminal_size()[0]):
                     rv = random.randint(1, 5)
+                    # Color the characters.
                     if rv == 1:
-                        print('\033[0m$\033[92m', end='')
+                        # $ sign will be gray.
+                        print('\033[90m$\033[92m', end='')
                     elif rv == 2:
-                        print('\033[0m9\033[92m', end='')
+                        # Number nine will be gray.
+                        print('\033[90m9\033[92m', end='')
                     elif rv == 3:
-                        print('\033[0m?\033[92m', end='')
+                        # ? sign will be gray.
+                        print('\033[90m?\033[92m', end='')
                     elif rv == 4:
+                        # Number zero will be green.
                         print('\033[92m0\033[92m', end='')
                     else:
+                        # Number one will be green.
                         print('\033[92m1\033[92m', end='')
                 print()
             time.sleep(0.1)
-            subprocess.run(["clear"])
+            subprocess.call('clear' if os.name == 'posix' else 'cls')
 
+    # If the script is called with the -h parameter.
+    # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
         screen.print("Do you want hide your screen? like matrix?", style="green")
 
+    # If none of these.
     else:
         screen.print("Error: Unknown parameters!", style="red")
 
+
+# The starting point is set on the init function.
 if __name__ == "__main__":
     init()
