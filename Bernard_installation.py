@@ -110,7 +110,7 @@ def installation_operation():
 
 
 def init():
-    subprocess.run(["clear"])
+    subprocess.call('clear' if os.name == 'posix' else 'cls')
 
     screen.print("Welcome to Bernard installation\n", style="bold green")
     screen.print("Please enter your installation path\n1-Current location\n2-Custom location")
