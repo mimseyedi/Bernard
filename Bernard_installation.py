@@ -64,8 +64,8 @@ def installation_operation():
 
                 settings = {"path_settings": {"scripts_path": f"{Path(os.getcwd(), 'scripts')}",
                                               "home_path": f"{home_path}",
-                                              "root_path": f"{os.getcwd()}",
-                            "password": hashed_password}}
+                                              "root_path": f"{os.getcwd()}"},
+                            "password": hashed_password}
 
                 with open("settings.json", "w") as settings_file:
                     json.dump(settings, settings_file)
