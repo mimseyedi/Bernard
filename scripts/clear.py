@@ -15,7 +15,7 @@ def init():
     # If the script is called alone.
     if len(sys.argv) == 1:
         # Using the command 'clear' or 'cls' according to the type of operating system.
-        subprocess.call('clear' if os.name == 'posix' else 'cls')
+        subprocess.call('clear' if os.name == 'posix' else 'cls', shell=True)
 
     # If the script is called with the -h parameter.
     # Display help and description of the called script with -h parameter.
