@@ -73,7 +73,7 @@ def installation_operation():
 
                 request_to_repo = requests.get(
                     "https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard.py")
-                with open("Bernard.py", "w") as bernard_file:
+                with open("Bernard.py", "w", encoding="utf-8") as bernard_file:
                     bernard_file.write(request_to_repo.text)
                 screen.print("(### The root file was successfully installed!)", style="green")
 
@@ -110,7 +110,7 @@ def installation_operation():
 
 
 def init():
-    subprocess.call('clear' if os.name == 'posix' else 'cls')
+    subprocess.call('clear' if os.name == 'posix' else 'cls', shell=True)
 
     screen.print("Welcome to Bernard installation\n", style="bold green")
     screen.print("Please enter your installation path\n1-Current location\n2-Custom location")
