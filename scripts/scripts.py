@@ -15,6 +15,7 @@ try:
     from bs4 import BeautifulSoup
 except ImportError as package:
     subprocess.run([sys.executable, "-m", "pip", "install", "beautifulsoup4"], stdout=subprocess.DEVNULL)
+    subprocess.run([sys.executable, "-m", "pip", "install", "lxml"], stdout=subprocess.DEVNULL)
 finally:
     from bs4 import BeautifulSoup
 try:
@@ -134,7 +135,7 @@ def init():
     # If the script is called with the -u parameter.
     # Check for available updates.
     elif len(sys.argv) == 2 and sys.argv[1] == "-u":
-        scripts = sorted(os.listdir(f"/{scripts_path}"))
+        scripts = sorted(os.listdir(scripts_path))
         available_updates = list()
 
         for script in scripts:
