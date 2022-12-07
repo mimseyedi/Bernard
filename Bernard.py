@@ -31,16 +31,16 @@ finally:
 try:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
-    from prompt_toolkit.shortcuts import CompleteStyle
     from prompt_toolkit.formatted_text import ANSI, HTML
+    from prompt_toolkit.shortcuts import CompleteStyle, confirm
     from prompt_toolkit.completion import WordCompleter, Completer, Completion
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
 finally:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
-    from prompt_toolkit.shortcuts import CompleteStyle
     from prompt_toolkit.formatted_text import ANSI, HTML
+    from prompt_toolkit.shortcuts import CompleteStyle, confirm
     from prompt_toolkit.completion import WordCompleter, Completer, Completion
 
 
@@ -88,7 +88,7 @@ class ItemsInCurrentDirCompleter(Completer):
 # Start-point.
 def init():
     # Preparing the program by cleaning the screen.
-    subprocess.call('clear' if os.name == 'posix' else 'cls')
+    subprocess.call('clear' if os.name == 'posix' else 'cls', shell=True)
 
     # Reading settings file.
     with open("settings.json", "r") as settings_file:
@@ -173,7 +173,12 @@ def init():
                     screen.print("Error: Unknown parameters!", style="red")
 
             # Exit command to quit the program and break the main loop.
-            elif cmd_input[0] == 'exit': break
+            elif cmd_input[0] == 'exit':
+                answer = confirm("Do you really want to exit?")
+                if answer:
+                    # Preparing the program by cleaning the screen.
+                    subprocess.call('clear' if os.name == 'posix' else 'cls', shell=True)
+                    break
 
 
 # The starting point is set on the init function.
