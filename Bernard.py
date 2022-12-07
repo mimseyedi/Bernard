@@ -32,12 +32,14 @@ try:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
     from prompt_toolkit.completion import WordCompleter
+    from prompt_toolkit.formatted_text import ANSI
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
 finally:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
     from prompt_toolkit.completion import WordCompleter
+    from prompt_toolkit.formatted_text import ANSI
 
 
 # Start-point.
@@ -78,7 +80,7 @@ def init():
         autocompleter = WordCompleter(sorted(items), ignore_case=False)
 
         # Here the main input of the user is taken.
-        cmd_input = season.prompt(f'➜ {current_dir}: ', completer=autocompleter).lstrip().split()
+        cmd_input = season.prompt(ANSI(f'\x1b[32m➜ \x1b[36;1m{current_dir}:\x1b[0m '), completer=autocompleter).lstrip().split()
 
         # Commands are checked only if they contain content.
         if len(cmd_input) > 0:
