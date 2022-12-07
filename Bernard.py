@@ -31,15 +31,58 @@ finally:
 try:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
-    from prompt_toolkit.completion import WordCompleter
-    from prompt_toolkit.formatted_text import ANSI
+    from prompt_toolkit.shortcuts import CompleteStyle
+    from prompt_toolkit.formatted_text import ANSI, HTML
+    from prompt_toolkit.completion import WordCompleter, Completer, Completion
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
 finally:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
-    from prompt_toolkit.completion import WordCompleter
-    from prompt_toolkit.formatted_text import ANSI
+    from prompt_toolkit.shortcuts import CompleteStyle
+    from prompt_toolkit.formatted_text import ANSI, HTML
+    from prompt_toolkit.completion import WordCompleter, Completer, Completion
+
+
+# Calculate file size in KB, MB, GB.
+def convert_bytes(size):
+    """ Convert bytes to KB, or MB or GB"""
+    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if size < 1024.0:
+            return "%3.0f %s" % (size, x)
+        size /= 1024.0
+
+
+# Completer class for show all items in directories.
+class ItemsInCurrentDirCompleter(Completer):
+    def get_completions(self, document, complete_event):
+        items = []
+        """Delete hidden files so that they are not displayed in the suggested menu
+           guide: In Unix systems, hidden file names start with a dot."""
+        for item in os.listdir(os.getcwd()):
+            if not item.startswith("."):
+                """Modifying the names of files or directories where spaces are used.
+                   To modify these names, a backslash should be used before each space so that 
+                   they are correctly selected by the terminal."""
+                items.append(item)
+
+        # Descriptions of the items are included in this dictionary.
+        meta_dict = {}
+        for item in items:
+            item_path = Path(os.getcwd(), item)
+            # If is directory:
+            if item_path.is_dir():
+                meta_dict[item] = HTML(f"<style bg='#C0C0C0' color='#008000'>Type(Directory) - {convert_bytes(os.path.getsize(item_path))} - {len(os.listdir(item_path))} items</style>")
+            # If is file:
+            else:
+                meta_dict[item] = HTML(f"<style bg='#C0C0C0' color='#008000'>Type(File) - {convert_bytes(os.path.getsize(item_path))}</style>")
+
+        word = document.get_word_before_cursor()
+        for item in items:
+            if item.startswith(word):
+                display = item
+                yield Completion(item, start_position=-len(word),
+                                 display=display, display_meta=meta_dict.get(item),)
 
 
 # Start-point.
@@ -63,24 +106,11 @@ def init():
     while True:
         # Getting the name of the last directory and the items inside it.
         current_dir = Path(os.getcwd()).name
-        items = os.listdir(os.getcwd())
-
-        """Delete hidden files so that they are not displayed in the suggested menu
-           guide: In Unix systems, hidden file names start with a dot."""
-        for item in items:
-            if item.startswith("."):
-                items.remove(item)
-
-        """Modifying the names of files or directories where spaces are used.
-           To modify these names, a backslash should be used before each space so that 
-           they are correctly selected by the terminal."""
-        items = map(lambda item: r'\ '.join(item.split(" ")), items)
-
-        # An autocompleter is created to create a drop-down menu with the ability to select directory contents.
-        autocompleter = WordCompleter(sorted(items), ignore_case=False)
 
         # Here the main input of the user is taken.
-        cmd_input = season.prompt(ANSI(f'\x1b[32m➜ \x1b[36;1m{current_dir}:\x1b[0m '), completer=autocompleter).lstrip().split()
+        cmd_input = season.prompt(ANSI(f'\x1b[32m➜ \x1b[36;1m{current_dir}:\x1b[0m '),
+                                  completer=ItemsInCurrentDirCompleter(),
+                                  complete_style=CompleteStyle.MULTI_COLUMN).lstrip().split()
 
         # Commands are checked only if they contain content.
         if len(cmd_input) > 0:
