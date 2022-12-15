@@ -27,7 +27,7 @@ finally:
 
 
 
-guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
+
 
 
 # Start-point.
@@ -81,6 +81,8 @@ def init():
      print(f"Weather Report: {weather_report[0]['description']}")
      print(f"Wind Speed: {wind_report['speed']}")
      print(f"Time Zone: {data['timezone']}")
+
+     guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
 
      # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
