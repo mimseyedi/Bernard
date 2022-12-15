@@ -27,32 +27,31 @@ finally:
 
 
 
-
+guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
 
 
 # Start-point.
      # API base URL
 Url = "https://api.openweathermap.org/data/2.5/weather?"
-
-     # City Name
-print("inter your city name: ")
-CITY = input()
-
      # Your API key
 API_KEY = "b07a711bdf19e559aca44794573fe62e"
 
-     # updating the URL
-URL = Url + "q=" + CITY + "&appid=" + API_KEY
 
-     # Sending HTTP request
-response = requests.get(URL)
+
+
 
 def init():
     # If the script is called alone.
     # Default weather.
     if len(sys.argv) == 1:
-
+     # City Name
+     print("inter your city name: ")
+     CITY = input()
+     # updating the URL
+     URL = Url + "q=" + CITY + "&appid=" + API_KEY
      # retrieving data in the json format
+     # Sending HTTP request
+     response = requests.get(URL)
      data = response.json()
 
      # take the main dict block
@@ -81,8 +80,6 @@ def init():
      print(f"Weather Report: {weather_report[0]['description']}")
      print(f"Wind Speed: {wind_report['speed']}")
      print(f"Time Zone: {data['timezone']}")
-
-     guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
 
      # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
