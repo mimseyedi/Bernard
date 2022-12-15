@@ -58,9 +58,9 @@ def init():
      main = data['main']
 
      # getting temperature
-     temperature = main['temp']
+     temperature = main['temp'] - 273.15
      # getting feel like
-     temp_feel_like = main['feels_like']
+     temp_feel_like = main['feels_like'] - 273.15
      # getting the humidity
      humidity = main['humidity']
      # getting the pressure
@@ -71,7 +71,6 @@ def init():
      # wind report
      wind_report = data['wind']
 
-     print(f"{CITY:-^35}")
      print(f"City ID: {data['id']}")
      print(f"Temperature: {temperature}")
      print(f"Feel Like: {temp_feel_like}")
@@ -79,7 +78,6 @@ def init():
      print(f"Pressure: {pressure}")
      print(f"Weather Report: {weather_report[0]['description']}")
      print(f"Wind Speed: {wind_report['speed']}")
-     print(f"Time Zone: {data['timezone']}")
 
      # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
