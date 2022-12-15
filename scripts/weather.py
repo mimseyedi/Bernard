@@ -41,6 +41,7 @@ API_KEY = "b07a711bdf19e559aca44794573fe62e"
 
 
 def init():
+ try:
     # If the script is called alone.
     # Default weather.
     if len(sys.argv) == 1:
@@ -84,7 +85,7 @@ def init():
      screen.print(guide_message, style="green")
 
     # If none of these.
-    else:
+ except:
         screen.print("Error: Unknown parameters!", style="red")
 
 
