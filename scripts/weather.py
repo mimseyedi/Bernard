@@ -1,7 +1,13 @@
 #importing modules
 import sys
-import os
 import subprocess
+
+try:
+     import calendar
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
+finally:
+     import calendar
 
 try:
      import requests
@@ -9,6 +15,7 @@ except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
 finally:
      import requests
+
 
 try:
      import json
@@ -26,59 +33,80 @@ finally:
     screen = Console()
 
 
-
-guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
-
-
 # Start-point.
-     # API base URL
-Url = "https://api.openweathermap.org/data/2.5/weather?"
-     # Your API key
+guide_message = "By using the weather command, you can watch the latest news of the weather in every city you want."
 API_KEY = "b07a711bdf19e559aca44794573fe62e"
-
-
-
-
+forcast_url = 'https://api.openweathermap.org/data/2.5/forecast?appid=' + API_KEY
 
 def init():
  try:
     # If the script is called alone.
     # Default weather.
     if len(sys.argv) == 1:
-     # City Name
-     print("inter your city name: ")
-     CITY = input()
-     # updating the URL
-     URL = Url + "q=" + CITY + "&appid=" + API_KEY
-     # retrieving data in the json format
-     # Sending HTTP request
-     response = requests.get(URL)
-     data = response.json()
+        # Asks the user for the city or zip code to be queried
+        forcast_url = 'https://api.openweathermap.org/data/2.5/forecast?appid=' + API_KEY
+        while True:
 
-     # take the main dict block
-     main = data['main']
+                    city = input('Please input the city name: ')
+                    # Appends the city to the api call
+                    forcast_url += '&q=' + city
+                    break
 
-     # getting temperature
-     temperature = main['temp'] - 273.15
-     # getting feel like
-     temp_feel_like = main['feels_like'] - 273.15
-     # getting the humidity
-     humidity = main['humidity']
-     # getting the pressure
-     pressure = main['pressure']
+        # Stores the Json response
+        json_data = requests.get(forcast_url).json()
 
-     # weather report
-     weather_report = data['weather']
-     # wind report
-     wind_report = data['wind']
+        location_data = {
+            'city': json_data['city']['name'],
+            'country': json_data['city']['country']
+        }
 
-     print(f"City ID: {data['id']}")
-     print(f"Temperature: {temperature}")
-     print(f"Feel Like: {temp_feel_like}")
-     print(f"Humidity: {humidity}")
-     print(f"Pressure: {pressure}")
-     print(f"Weather Report: {weather_report[0]['description']}")
-     print(f"Wind Speed: {wind_report['speed']}")
+        screen.print('\n{city}, {country}'.format(**location_data), style="blue")
+
+        # The current date we are iterating through
+        current_date = ''
+
+        # Iterates through the array of dictionaries named list in json_data
+        for item in json_data['list']:
+
+            # Time of the weather data received, partitioned into 3 hour blocks
+            time = item['dt_txt']
+
+            # Split the time into date and hour [2018-04-15 06:00:00]
+            next_date, hour = time.split(' ')
+
+            # Stores the current date and prints it once
+            if current_date != next_date:
+                current_date = next_date
+                year, month, day = current_date.split('-')
+                date = {'y': year, 'm': month, 'd': day}
+                screen.print('\n{m}/{d}/{y}'.format(**date), style="blue")
+
+            # Grabs the first 2 integers from our HH:MM:SS string to get the hours
+            hour = int(hour[:2])
+
+            # Sets the AM (ante meridiem) or PM (post meridiem) period
+            if hour < 12:
+                if hour == 0:
+                    hour = 12
+                meridiem = 'AM'
+            else:
+                if hour > 12:
+                    hour -= 12
+                meridiem = 'PM'
+
+            # Prints the hours [HH:MM AM/PM]
+            screen.print('\n%i:00 %s' % (hour, meridiem))
+
+            # Temperature is measured in Kelvin
+            temperature = item['main']['temp']
+
+            # Weather condition
+            description = item['weather'][0]['description'],
+
+            # Prints the description as well as the temperature in Celcius and Farenheit
+            screen.print('Weather condition: %s' % description, style="blue")
+            screen.print('Celcius: {:.2f}'.format(temperature - 273.15), style="blue")
+
 
      # Display help and description of the called script with -h parameter.
     elif len(sys.argv) == 2 and sys.argv[1] == "-h":
