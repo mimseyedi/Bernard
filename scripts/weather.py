@@ -78,6 +78,8 @@ def get_todays_weather(city: str):
         screen.print(f"   └── G: {now.month}/{now.day}/{now.year} - J: {jalali_y}/{jalali_m}/{jalali_d}", style="yellow")
         screen.print(f"       ├── Temperature: {main_data['temp'] - 273.15}", style="yellow")
         screen.print(f"       ├── Feels Like: {main_data['feels_like'] - 273.15}", style="yellow")
+        screen.print(f"       ├── Weather Report: {data['weather'][0]['description']}", style="yellow")
+        screen.print(f"       ├── Wind Speed: {data['wind']['speed']}", style="yellow")
         screen.print(f"       ├── Humidity: {main_data['humidity']}", style="yellow")
         screen.print(f"       └── Pressure: {main_data['pressure']}", style="yellow")
 
