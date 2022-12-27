@@ -117,7 +117,7 @@ def init():
                script that wants to be executed includes the internal commands of home, goto and back or not?
                These commands are internal scripts that should be managed here according to their functionality."""
 
-            if cmd_input[0] not in ["home", "goto", "back", "exit"]:
+            if cmd_input[0] not in ["home", "goto", "back", "$", "exit"]:
                 # If the called command was not from internal scripts, it will go to the scripts directory and execute the called script.
                 main_command = cmd_input[0] + '.py'
                 # Separate parameters of called scripts.
@@ -169,6 +169,16 @@ def init():
                                   style="green")
                 else:
                     screen.print("Error: Unknown parameters!", style="red")
+
+            # Internal $ script.
+            elif cmd_input[0] == "$":
+                if len(cmd_input) == 1:
+                    screen.print("Error: You must enter a shell command!", style="red")
+                # -h parameter to display help.
+                elif len(cmd_input) == 2 and cmd_input[1] == "-h":
+                    screen.print("Listens to shell commands", style="green")
+                elif len(cmd_input) >= 2 and cmd_input[1] != "-h":
+                    os.system(f"{' '.join(cmd_input[1:])}")
 
             # Exit command to quit the program and break the main loop.
             elif cmd_input[0] == 'exit':
