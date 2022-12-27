@@ -2,7 +2,9 @@ import os
 import sys
 import json
 import shutil
+import hashlib
 from pathlib import Path
+from getpass import getpass
 try:
     from rich.console import Console
 except ImportError as module:
@@ -21,6 +23,27 @@ drop paste the selected all files
      paste with index of file
 -w hand washing -> clean the memory!
 -c remove one path by index"""
+
+
+# Get the root path.
+root_path = Path(__file__).parent.parent
+
+
+# Check root directory.
+def is_root(path):
+    return True if str(root_path) in str(path) else False
+
+
+# User authentication function.
+def authentication(password):
+    # Reading settings file.
+    with open(Path(root_path, "settings.json"), "r") as settings_file:
+        settings = json.load(settings_file)
+
+    sha_256 = hashlib.sha256()
+    sha_256.update(str(password).encode("UTF-8"))
+    hashed_password = sha_256.hexdigest()
+    return True if hashed_password == settings["password"] else False
 
 
 # Start-point.
@@ -101,44 +124,89 @@ def init():
     # To copy all the contents inside the hand.
     # Pattern: hand drop
     elif len(sys.argv) == 2 and sys.argv[1] == "drop":
-        for item in hand["items"]:
-            item = Path(item)
-            if item.is_file():
-                if Path(os.getcwd(), item.name).exists():
-                    screen.print(f"Error: '{item.name}' already exists!", style="red")
-                else:
-                    shutil.copyfile(item, item.name)
-                    screen.print(f"'{item}' was copied successfully!", style="green")
+        if is_root(os.getcwd()):
+            user_password = getpass("Enter password: ")
+            if authentication(user_password):
+                for item in hand["items"]:
+                    item = Path(item)
+                    if item.is_file():
+                        if Path(os.getcwd(), item.name).exists():
+                            screen.print(f"Error: '{item.name}' already exists!", style="red")
+                        else:
+                            shutil.copyfile(item, item.name)
+                            screen.print(f"'{item}' was copied successfully!", style="green")
+                    else:
+                        if Path(os.getcwd(), item.name).exists():
+                            screen.print(f"Error: '{item.name}' already exists!", style="red")
+                        else:
+                            shutil.copytree(item, item.name)
+                            screen.print(f"'{item}' was copied successfully!", style="green")
             else:
-                if Path(os.getcwd(), item.name).exists():
-                    screen.print(f"Error: '{item.name}' already exists!", style="red")
-                else:
-                    shutil.copytree(item, item.name)
-                    screen.print(f"'{item}' was copied successfully!", style="green")
-
-    # If the script is called with the drop parameter.
-    # To copy the contents inside the photo individually by index.
-    # Pattern: hand drop 1 3 7 8 ...
-    elif len(sys.argv) >= 3 and sys.argv[1] == "drop":
-        indexes = sys.argv[2:]
-        for index in indexes:
-            if index.isdigit():
-                index = int(index) - 1
-                item = Path(hand["items"][index])
+                screen.print("Error: Authentication failed!", style="red")
+        else:
+            for item in hand["items"]:
+                item = Path(item)
                 if item.is_file():
                     if Path(os.getcwd(), item.name).exists():
                         screen.print(f"Error: '{item.name}' already exists!", style="red")
                     else:
                         shutil.copyfile(item, item.name)
-                        screen.print(f"'{item.name}' was copied successfully!", style="green")
+                        screen.print(f"'{item}' was copied successfully!", style="green")
                 else:
                     if Path(os.getcwd(), item.name).exists():
                         screen.print(f"Error: '{item.name}' already exists!", style="red")
                     else:
                         shutil.copytree(item, item.name)
-                        screen.print(f"'{item.name}' was copied successfully!", style="green")
+                        screen.print(f"'{item}' was copied successfully!", style="green")
+
+    # If the script is called with the drop parameter.
+    # To copy the contents inside the photo individually by index.
+    # Pattern: hand drop 1 3 7 8 ...
+    elif len(sys.argv) >= 3 and sys.argv[1] == "drop":
+        if is_root(os.getcwd()):
+            user_password = getpass("Enter password: ")
+            if authentication(user_password):
+                indexes = sys.argv[2:]
+                for index in indexes:
+                    if index.isdigit():
+                        index = int(index) - 1
+                        item = Path(hand["items"][index])
+                        if item.is_file():
+                            if Path(os.getcwd(), item.name).exists():
+                                screen.print(f"Error: '{item.name}' already exists!", style="red")
+                            else:
+                                shutil.copyfile(item, item.name)
+                                screen.print(f"'{item.name}' was copied successfully!", style="green")
+                        else:
+                            if Path(os.getcwd(), item.name).exists():
+                                screen.print(f"Error: '{item.name}' already exists!", style="red")
+                            else:
+                                shutil.copytree(item, item.name)
+                                screen.print(f"'{item.name}' was copied successfully!", style="green")
+                    else:
+                        screen.print(f"Error: Index is not a digit!", style="red")
             else:
-                screen.print(f"Error: Index is not a digit!", style="red")
+                screen.print("Error: Authentication failed!", style="red")
+        else:
+            indexes = sys.argv[2:]
+            for index in indexes:
+                if index.isdigit():
+                    index = int(index) - 1
+                    item = Path(hand["items"][index])
+                    if item.is_file():
+                        if Path(os.getcwd(), item.name).exists():
+                            screen.print(f"Error: '{item.name}' already exists!", style="red")
+                        else:
+                            shutil.copyfile(item, item.name)
+                            screen.print(f"'{item.name}' was copied successfully!", style="green")
+                    else:
+                        if Path(os.getcwd(), item.name).exists():
+                            screen.print(f"Error: '{item.name}' already exists!", style="red")
+                        else:
+                            shutil.copytree(item, item.name)
+                            screen.print(f"'{item.name}' was copied successfully!", style="green")
+                else:
+                    screen.print(f"Error: Index is not a digit!", style="red")
 
     # If the script is called with the -w parameter.
     # Clearing all the contents inside the hand.

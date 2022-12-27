@@ -1,8 +1,11 @@
 import os
 import sys
+import json
+import hashlib
 import datetime
 import subprocess
 from pathlib import Path
+from getpass import getpass
 from asyncio import Future, ensure_future
 try:
     from rich.console import Console
@@ -481,6 +484,27 @@ application = Application(
 )
 
 
+# Get the root path.
+root_path = Path(__file__).parent.parent
+
+
+# Check root directory.
+def is_root(path):
+    return True if str(root_path) in str(path) else False
+
+
+# User authentication function.
+def authentication(password):
+    # Reading settings file.
+    with open(Path(root_path, "settings.json"), "r") as settings_file:
+        settings = json.load(settings_file)
+
+    sha_256 = hashlib.sha256()
+    sha_256.update(str(password).encode("UTF-8"))
+    hashed_password = sha_256.hexdigest()
+    return True if hashed_password == settings["password"] else False
+
+
 # Start-point.
 def init():
     # If the script is called alone.
@@ -498,10 +522,29 @@ def init():
             global py_file
             py_file = Path(os.getcwd(), sys.argv[1])
             if py_file.exists():
-                with open(py_file, "rb") as open_file:
-                    text_field.text = open_file.read().decode("utf-8", errors="ignore")
+                if is_root(py_file):
+                    user_password = getpass("Enter password: ")
+                    if authentication(user_password):
+                        with open(py_file, "rb") as open_file:
+                            text_field.text = open_file.read().decode("utf-8", errors="ignore")
 
-            application.run()
+                        application.run()
+                    else:
+                        screen.print("Error: Authentication failed!", style="red")
+                else:
+                    with open(py_file, "rb") as open_file:
+                        text_field.text = open_file.read().decode("utf-8", errors="ignore")
+
+                    application.run()
+            else:
+                if is_root(py_file):
+                    user_password = getpass("Enter password: ")
+                    if authentication(user_password):
+                        application.run()
+                    else:
+                        screen.print("Error: Authentication failed!", style="red")
+                else:
+                    application.run()
         else:
             screen.print("Error: You must select a Python3 file!", style="red")
 
