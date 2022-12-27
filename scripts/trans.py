@@ -7,12 +7,14 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "googletrans==3.1.0a0"], stdout=subprocess.DEVNULL)
     import googletrans
+finally:
     translator = googletrans.Translator()
 try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
     from rich.console import Console
+finally:
     screen = Console()
 
 

@@ -26,6 +26,7 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
     from rich.console import Console
+finally:
     screen = Console()
 try:
     from prompt_toolkit import PromptSession
