@@ -12,7 +12,6 @@ try:
     from prompt_toolkit.shortcuts import button_dialog
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
-finally:
     from prompt_toolkit import prompt
     from prompt_toolkit.styles import Style
     from prompt_toolkit.shortcuts import confirm
@@ -23,7 +22,6 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 

@@ -5,19 +5,16 @@ try:
      import requests
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
-finally:
-     import requests
+    import requests
 try:
      from bs4 import BeautifulSoup
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "beautifulsoup4"], stdout=subprocess.DEVNULL)
-finally:
     from bs4 import BeautifulSoup
 try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 

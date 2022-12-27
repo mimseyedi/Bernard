@@ -9,26 +9,21 @@ try:
     import requests
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "requests"], stdout=subprocess.DEVNULL)
-finally:
     import requests
 try:
     from bs4 import BeautifulSoup
 except ImportError as package:
     subprocess.run([sys.executable, "-m", "pip", "install", "beautifulsoup4"], stdout=subprocess.DEVNULL)
-    subprocess.run([sys.executable, "-m", "pip", "install", "lxml"], stdout=subprocess.DEVNULL)
-finally:
     from bs4 import BeautifulSoup
 try:
     from clint.textui import progress
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "clint"], stdout=subprocess.DEVNULL)
-finally:
     from clint.textui import progress
 try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 
@@ -108,7 +103,7 @@ def init():
     elif len(sys.argv) == 2 and sys.argv[1] == "-n":
         installed_scripts = sorted(os.listdir(scripts_path))
         request = requests.get("https://github.com/mimseyedi/Bernard/tree/master/scripts")
-        soup = BeautifulSoup(request.text, "lxml")
+        soup = BeautifulSoup(request.text, "html.parser")
 
         items = soup.findAll("div", class_="flex-auto min-width-0 col-md-2 mr-3")
         repo_scripts = [item.text.strip() for item in items if item.text.strip().endswith(".py")]

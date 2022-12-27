@@ -8,7 +8,6 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 try:
@@ -39,7 +38,6 @@ try:
                                         TextArea,)
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
-finally:
     from prompt_toolkit.application import Application
     from prompt_toolkit.application.current import get_app
     from prompt_toolkit.completion import PathCompleter

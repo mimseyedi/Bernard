@@ -4,18 +4,17 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 try:
-    import bs4
+    from bs4 import BeautifulSoup
 except ImportError as package:
     subprocess.run([sys.executable, "-m", "pip", "install", "beautifulsoup4"], stdout=subprocess.DEVNULL)
+    from bs4 import BeautifulSoup
 try:
     import googlesearch
 except ImportError as package:
     subprocess.run([sys.executable, "-m", "pip", "install", "google"], stdout=subprocess.DEVNULL)
-finally:
     import googlesearch
 
 

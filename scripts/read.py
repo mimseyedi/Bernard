@@ -7,7 +7,6 @@ try:
     from rich.syntax import Syntax
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     from rich.syntax import Syntax
     screen = Console()

@@ -11,7 +11,6 @@ try:
     from prompt_toolkit.widgets import SearchToolbar, TextArea
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
-finally:
     from prompt_toolkit.application import Application
     from prompt_toolkit.document import Document
     from prompt_toolkit.filters import has_focus
@@ -24,7 +23,6 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 

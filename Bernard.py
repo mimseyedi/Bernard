@@ -25,7 +25,6 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
     screen = Console()
 try:
@@ -36,7 +35,6 @@ try:
     from prompt_toolkit.completion import WordCompleter, Completer, Completion
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
-finally:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
     from prompt_toolkit.formatted_text import ANSI, HTML
@@ -46,7 +44,6 @@ finally:
 
 # Calculate file size in KB, MB, GB.
 def convert_bytes(size):
-    """ Convert bytes to KB, or MB or GB"""
     for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
         if size < 1024.0:
             return "%3.0f %s" % (size, x)
