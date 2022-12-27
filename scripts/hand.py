@@ -8,6 +8,7 @@ try:
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
     from rich.console import Console
+finally:
     screen = Console()
 
 
@@ -19,32 +20,14 @@ get will be select current directory
 drop paste the selected all files
      paste with index of file
 -w hand washing -> clean the memory!
--c remove one path by index
--z undo drop action"""
-
-
-# A function to add the last performed operation.
-def add_last_drop(actions):
-    hand["last_drop"].append(actions)
-    with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
-        json.dump(hand, hand_file)
-
-
-# A function to delete the last operation performed.
-def rem_last_drop():
-    with open(Path(scripts_path, ".hand_memory.json"), "r") as hand_file:
-        hand = json.load(hand_file)
-
-    hand["last_drop"].clear()
-    with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
-        json.dump(hand, hand_file)
+-c remove one path by index"""
 
 
 # Start-point.
 def init():
     # Get the main path and creating hand dict.
     global hand, scripts_path
-    hand = {"items": [], "last_drop": []}
+    hand = {"items": []}
     path_of_file = Path(__file__)
     scripts_path = path_of_file.parent
 
@@ -118,7 +101,6 @@ def init():
     # To copy all the contents inside the hand.
     # Pattern: hand drop
     elif len(sys.argv) == 2 and sys.argv[1] == "drop":
-        last_action = []
         for item in hand["items"]:
             item = Path(item)
             if item.is_file():
@@ -127,24 +109,18 @@ def init():
                 else:
                     shutil.copyfile(item, item.name)
                     screen.print(f"'{item}' was copied successfully!", style="green")
-                    last_action.append(f"{item}")
             else:
                 if Path(os.getcwd(), item.name).exists():
                     screen.print(f"Error: '{item.name}' already exists!", style="red")
                 else:
                     shutil.copytree(item, item.name)
                     screen.print(f"'{item}' was copied successfully!", style="green")
-                    last_action.append(f"{Path(os.getcwd(), item.name)}")
-
-        if len(last_action) > 0:
-            add_last_drop(last_action)
 
     # If the script is called with the drop parameter.
     # To copy the contents inside the photo individually by index.
     # Pattern: hand drop 1 3 7 8 ...
     elif len(sys.argv) >= 3 and sys.argv[1] == "drop":
         indexes = sys.argv[2:]
-        last_action = []
         for index in indexes:
             if index.isdigit():
                 index = int(index) - 1
@@ -155,19 +131,14 @@ def init():
                     else:
                         shutil.copyfile(item, item.name)
                         screen.print(f"'{item.name}' was copied successfully!", style="green")
-                        last_action.append(f"{Path(os.getcwd(), item.name)}")
                 else:
                     if Path(os.getcwd(), item.name).exists():
                         screen.print(f"Error: '{item.name}' already exists!", style="red")
                     else:
                         shutil.copytree(item, item.name)
                         screen.print(f"'{item.name}' was copied successfully!", style="green")
-                        last_action.append(f"{Path(os.getcwd(), item.name)}")
             else:
                 screen.print(f"Error: Index is not a digit!", style="red")
-
-        if len(last_action) > 0:
-            add_last_drop(last_action)
 
     # If the script is called with the -w parameter.
     # Clearing all the contents inside the hand.
@@ -203,23 +174,6 @@ def init():
 
         with open(Path(scripts_path, ".hand_memory.json"), "w") as hand_file:
             json.dump(hand, hand_file)
-
-    # If the script is called with the -z parameter.
-    # Ctrl+z
-    elif len(sys.argv) == 2 and sys.argv[1] == "-z":
-        if len(hand["last_drop"]) > 0:
-            for item in hand["last_drop"][-1]:
-                if os.path.exists(item):
-                    if os.path.isfile(item):
-                        os.remove(item)
-                    else:
-                        shutil.rmtree(item)
-            screen.print("return to the previous position was applied", style="green")
-
-        if len(hand["last_drop"]) == 0:
-            screen.print("Error: The required action was not found", style="red")
-
-        rem_last_drop()
 
     # If none of these.
     else:
