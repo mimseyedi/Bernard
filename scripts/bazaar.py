@@ -95,7 +95,7 @@ def search_in_bazaar(item: str, count: int=10, best_price: bool=False):
 def init():
     # If the script is called alone.
     if len(sys.argv) == 1:
-        pass
+        screen.print("Error: You must enter something to search in bazaar!", style="red")
 
     # If the script is called with the -h parameter.
     # Display help and description of the called script with -h parameter.
