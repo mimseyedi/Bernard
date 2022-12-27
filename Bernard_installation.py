@@ -125,7 +125,7 @@ def installation_operation():
 
         scripts = ["bcr.py", "cal.py", "calcul.py", "clear.py", "date.py", "deldir.py", "delf.py",
                    "hand.py", "hash.py", "items.py", "map.py", "newdir.py", "newf.py",
-                   "open.py", "orgdir.py", "py.py", "pytor.py", "read.py", "ren.py"
+                   "open.py", "orgdir.py", "py.py", "pytor.py", "read.py", "ren.py",
                    "roll.py", "scripts.py", "settings.py", "sort.py", "system.py",
                    "time.py", "timer.py", "tree.py", "void.py"]
 
