@@ -25,12 +25,15 @@ def init():
     elif len(sys.argv) == 2 and sys.argv[1] != "-h":
         # Is it checked if the input is a number?
         if sys.argv[1].isdigit():
-            start_point = 1
-            while start_point <= int(sys.argv[1]):
-                print(f"\033[92m{start_point}\033[0m", "\r", end="", flush=True)
-                time.sleep(1)
-                start_point += 1
-            screen.print("Times up!", style="green")
+            try:
+                start_point = 1
+                while start_point <= int(sys.argv[1]):
+                    print(f"\033[92m{start_point}\033[0m", "\r", end="", flush=True)
+                    time.sleep(1)
+                    start_point += 1
+                screen.print("Times up!", style="green")
+            except KeyboardInterrupt:
+                print()
         else:
             screen.print("Error: You must enter a digit!", style="red")
 

@@ -98,9 +98,12 @@ def is_not_hidden(path):
 def init():
     # If the script is called alone.
     if len(sys.argv) == 1:
-        paths = DisplayablePath.make_tree(Path(os.getcwd()), criteria=is_not_hidden)
-        for path in paths:
-            screen.print(path.displayable())
+        try:
+            paths = DisplayablePath.make_tree(Path(os.getcwd()), criteria=is_not_hidden)
+            for path in paths:
+                screen.print(path.displayable())
+        except KeyboardInterrupt:
+            print()
 
     # If the script is called with the -h parameter.
     # Display help and description of the called script with -h parameter.
