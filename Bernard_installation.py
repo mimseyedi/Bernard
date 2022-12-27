@@ -40,73 +40,116 @@ try:
     from rich.console import Console
 except ImportError as module:
     subprocess.run([sys.executable, "-m", "pip", "install", "rich"], stdout=subprocess.DEVNULL)
-finally:
     from rich.console import Console
+finally:
     screen = Console()
+try:
+    from prompt_toolkit import prompt
+    from prompt_toolkit.validation import Validator
+    from prompt_toolkit.completion import PathCompleter
+except ImportError as module:
+    subprocess.run([sys.executable, "-m", "pip", "install", "prompt-toolkit==3.0.16"], stdout=subprocess.DEVNULL)
+    from prompt_toolkit import prompt
+    from prompt_toolkit.validation import Validator
+    from prompt_toolkit.completion import PathCompleter
+
+
+def check_internet_connection():
+    try:
+        request = requests.get("https://github.com/mimseyedi/Bernard", timeout=10)
+        return True
+    except (requests.ConnectionError, requests.Timeout) as exception:
+        return False
+
+
+def path_validation(path: str):
+    _path = Path(os.getcwd(), path)
+    if _path.exists() and _path.is_dir():
+        return _path
+
+
+def password_validation(confirm_password: str):
+    if confirm_password == user_password:
+        return confirm_password
 
 
 def installation_operation():
-    home_path = input("Please enter home path: ")
-    home_path = Path(os.getcwd(), home_path)
-    if home_path.exists():
-        if home_path.is_dir():
-            user_password = getpass("Please enter a new password: ")
-            confirm_password = getpass("Please confirm password: ")
+    if check_internet_connection():
+        path_validator = Validator.from_callable(
+            path_validation,
+            error_message='The selected path must already exist and also be a directory!',
+            move_cursor_to_end=True)
 
-            if user_password == confirm_password:
-                os.mkdir("Bernard")
-                os.chdir(Path(os.getcwd(), "Bernard"))
-                os.mkdir("scripts")
+        home_path = prompt("Please enter home path: ", validator=path_validator,
+                           validate_while_typing=False, completer=PathCompleter())
 
-                sha_256 = hashlib.sha256()
-                sha_256.update(str(user_password).encode('UTF-8'))
-                hashed_password = sha_256.hexdigest()
+        global user_password
+        user_password = prompt("Please enter a new password: ", is_password=True)
 
-                settings = {"path_settings": {"scripts_path": f"{Path(os.getcwd(), 'scripts')}",
-                                              "home_path": f"{home_path}",
-                                              "root_path": f"{os.getcwd()}"},
-                            "password": hashed_password}
+        pass_validator = Validator.from_callable(
+            password_validation,
+            error_message='Passwords are not the same!',
+            move_cursor_to_end=True)
 
-                with open("settings.json", "w") as settings_file:
-                    json.dump(settings, settings_file)
-                screen.print("(### The settings file was successfully installed!)", style="green")
+        confirm_password = prompt("Please confirm password: ", validator=pass_validator,
+                                  validate_while_typing=True, is_password=True)
 
-                request_to_repo = requests.get(
-                    "https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard.py")
-                with open("Bernard.py", "w", encoding="utf-8") as bernard_file:
-                    bernard_file.write(request_to_repo.text)
-                screen.print("(### The root file was successfully installed!)", style="green")
+        os.mkdir("Bernard")
+        os.chdir(Path(os.getcwd(), "Bernard"))
+        os.mkdir("scripts")
+        os.mkdir("BCS")
+        os.mkdir("LICENSES")
 
-                scripts = ["cal.py", "clear.py", "date.py", "deldir.py", "delf.py", "gcc.py",
-                           "google.py", "hand.py", "hash.py", "items.py", "map.py", "newdir.py",
-                           "newf.py", "open.py", "orgdir.py", "ping.py", "py.py", "read.py",
-                           "roll.py", "scripts.py", "settings.py", "sort.py", "system.py",
-                           "time.py", "timer.py", "trans.py", "tree.py", "void.py", "wiki.py"]
+        sha_256 = hashlib.sha256()
+        sha_256.update(str(user_password).encode('UTF-8'))
+        hashed_password = sha_256.hexdigest()
 
-                for script in scripts:
-                    request_scripts = requests.get(
-                        f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{script}", stream=True)
-                    with open(f"scripts/{script}", "wb") as script_file:
-                        total_length = int(request_scripts.headers.get('content-length'))
-                        for chunk in progress.bar(request_scripts.iter_content(chunk_size=1024),
-                                                  expected_size=(total_length / 1024) + 1):
-                            if chunk:
-                                script_file.write(chunk)
-                                script_file.flush()
+        settings = {"path_settings": {"scripts_path": f"{Path(os.getcwd(), 'scripts')}",
+                                      "home_path": f"{home_path}",
+                                      "root_path": f"{os.getcwd()}"},
+                    "password": hashed_password}
 
-                    screen.print(f"(### The {script} file was successfully installed!)", style="green")
+        with open("settings.json", "w") as settings_file:
+            json.dump(settings, settings_file)
+        screen.print("(Installation message: The settings file was successfully installed!)", style="green")
 
-                dep_packages = ["prompt-toolkit==3.0.16", "rich"]
-                for package in dep_packages:
-                    subprocess.run([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
+        license_request = requests.get("https://raw.githubusercontent.com/mimseyedi/Bernard/master/LICENSES/LICENSE")
+        with open("LICENSES/LICENSE", "w", encoding="utf-8") as license_file:
+            license_file.write(license_request.text)
 
-                screen.print("### Bernard was successfully installed!", style="bold green")
-            else:
-                screen.print("Error: Passwords are not the same!", style="red")
-        else:
-            screen.print("Error: You must select a directory!", style="red")
+        request_to_repo = requests.get(
+            "https://raw.githubusercontent.com/mimseyedi/Bernard/master/Bernard.py")
+        with open("Bernard.py", "w", encoding="utf-8") as bernard_file:
+            bernard_file.write(request_to_repo.text)
+        screen.print("(Installation message: The root file was successfully installed!)", style="green")
+
+        scripts = ["bcr.py", "cal.py", "calcul.py", "clear.py", "date.py", "deldir.py", "delf.py",
+                   "hand.py", "hash.py", "items.py", "map.py", "newdir.py", "newf.py",
+                   "open.py", "orgdir.py", "py.py", "pytor.py", "read.py", "ren.py"
+                   "roll.py", "scripts.py", "settings.py", "sort.py", "system.py",
+                   "time.py", "timer.py", "tree.py", "void.py"]
+
+        for script in scripts:
+            request_scripts = requests.get(
+                f"https://raw.githubusercontent.com/mimseyedi/Bernard/master/scripts/{script}", stream=True)
+            with open(f"scripts/{script}", "wb") as script_file:
+                total_length = int(request_scripts.headers.get('content-length'))
+                for chunk in progress.bar(request_scripts.iter_content(chunk_size=1024),
+                                          expected_size=(total_length / 1024) + 1):
+                    if chunk:
+                        script_file.write(chunk)
+                        script_file.flush()
+
+            screen.print(f"(Installation message: The {script} file was successfully installed!)", style="green")
+
+        dep_packages = ["prompt-toolkit==3.0.16", "rich", "requests", "beautifulsoup4"]
+        for package in dep_packages:
+            subprocess.run([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
+
+        screen.print("Installation message: Bernard was successfully installed!", style="bold green")
+
     else:
-        screen.print("Error: Location not found!", style="red")
+        screen.print("Error: You are not connected to the Internet! Please check your internet connection.", style="red")
 
 
 def init():
@@ -123,21 +166,19 @@ def init():
         else:
             installation_operation()
     else:
-        install_path = input("Enter custom location: ")
-        install_path = Path(install_path)
+        path_validator = Validator.from_callable(
+            path_validation,
+            error_message='The selected path must already exist and also be a directory!',
+            move_cursor_to_end=True)
 
-        if install_path.exists():
-            if install_path.is_dir():
-                if install_path in os.listdir():
-                    install_path = f"{Path(os.getcwd(), install_path)}"
-                if Path(os.getcwd(), install_path, "Bernard").exists() and Path(os.getcwd(), install_path, "Bernard").is_dir():
-                    screen.print("Error: A directory named Bernard already exists in this path", style="red")
-                else:
-                    installation_operation()
-            else:
-                screen.print("Error: You must select a directory!", style="red")
+        install_path = prompt("Enter custom location: ", validator=path_validator,
+                              validate_while_typing=False, completer=PathCompleter())
+
+        if Path(install_path, "Bernard").exists() and Path(install_path, "Bernard").is_dir():
+            screen.print("Error: A directory named Bernard already exists in this path", style="red")
         else:
-            screen.print("Error: Path not found!", style="red")
+            os.chdir(install_path)
+            installation_operation()
 
 
 if __name__ == "__main__":
